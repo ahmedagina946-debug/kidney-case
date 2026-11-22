@@ -1,0 +1,2945 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="theme-color" content="#5F2A73" />
+  <meta name="description" content="An interactive bilingual medical awareness experience on the early detection of diabetic kidney disease." />
+  <title>KIDNEY CASE — An Interactive Medical Awareness Experience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ==========================================================================
+       1. DESIGN TOKENS & THEME VARIABLES
+       ========================================================================== */
+    :root {
+      --color-teal-dark: #5F2A73;
+      --color-teal: #2E6DA4;
+      --color-teal-light: #4A8CC4;
+      --color-teal-tint: #EAF3FA;
+      --color-mint: #7FB1DC;
+      --color-blue: #2E6DA4;
+      --color-blue-light: #4A86BF;
+      --color-blue-tint: #F2EAF6;
+      --color-beige: #F5F3F8;
+      --color-beige-dark: #E6E0EC;
+      --color-white: #FFFFFF;
+      --color-text-main: #231B2E;
+      --color-text-muted: #675F73;
+      --color-border: #DDD8E8;
+
+      --color-success: #16794C;
+      --color-success-bg: #E8F6EF;
+      --color-success-border: #9ED6BA;
+
+      --color-warning: #B45309;
+      --color-warning-bg: #FEF5E7;
+      --color-warning-border: #F5CBA7;
+
+      --shadow-sm: 0 1px 2px rgba(95, 42, 115, 0.05), 0 2px 8px rgba(95, 42, 115, 0.05);
+      --shadow-md: 0 2px 6px rgba(95, 42, 115, 0.05), 0 12px 32px rgba(95, 42, 115, 0.09);
+      --shadow-lg: 0 4px 10px rgba(95, 42, 115, 0.06), 0 20px 48px rgba(95, 42, 115, 0.15);
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-pill: 999px;
+
+      --font-en: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-ar: "Cairo", "Segoe UI", Tahoma, "Geeza Pro", "Noto Sans Arabic", Arial, sans-serif;
+      --gradient-brand: linear-gradient(135deg, #2E6DA4 0%, #2E6DA4 100%);
+      --transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ==========================================================================
+       2. RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    ::selection {
+      background: rgba(127, 177, 220, 0.28);
+      color: var(--color-teal-dark);
+    }
+
+    /* Letter-spacing breaks Arabic letter joining, so labels that use it
+       revert to natural spacing in RTL mode. */
+    html[dir="rtl"] .campaign-tag,
+    html[dir="rtl"] .section-eyebrow,
+    html[dir="rtl"] .takeaways-title,
+    html[dir="rtl"] .vital-label {
+      letter-spacing: normal;
+    }
+
+    body {
+      font-family: var(--font-en);
+      background-color: var(--color-beige);
+      background-image:
+        radial-gradient(circle at 12% 8%, rgba(95, 42, 115, 0.07) 0%, transparent 42%),
+        radial-gradient(circle at 88% 85%, rgba(46, 109, 164, 0.07) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.35) 0%, transparent 70%);
+      color: var(--color-text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html[dir="rtl"] body {
+      font-family: var(--font-ar);
+      line-height: 1.75;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    button:focus-visible, a:focus-visible {
+      outline: 3px solid var(--color-blue-light);
+      outline-offset: 3px;
+    }
+
+    /* ==========================================================================
+       3. TOP NAVIGATION & PROGRESS BAR
+       ========================================================================== */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px) saturate(1.4);
+      -webkit-backdrop-filter: blur(14px) saturate(1.4);
+      border-bottom: 1px solid var(--color-border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-inner {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      text-align: start;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      background: var(--gradient-brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-white);
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(95, 42, 115, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: var(--color-teal-dark);
+      line-height: 1.15;
+    }
+
+    .brand-sub {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .stage-pill {
+      background: var(--color-teal-tint);
+      color: var(--color-teal-dark);
+      font-size: 0.76rem;
+      font-weight: 800;
+      padding: 0.35rem 0.8rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(95, 42, 115, 0.14);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .lang-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--color-white);
+      border: 1.5px solid var(--color-teal);
+      color: var(--color-teal-dark);
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 0.42rem 0.9rem;
+      border-radius: var(--radius-pill);
+      transition: var(--transition);
+      white-space: nowrap;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .lang-toggle:hover {
+      background: var(--color-teal);
+      border-color: var(--color-teal);
+      color: var(--color-white);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(95, 42, 115, 0.24);
+    }
+
+    .global-progress-track {
+      width: 100%;
+      height: 4px;
+      background: var(--color-border);
+      overflow: hidden;
+    }
+
+    .global-progress-fill {
+      height: 100%;
+      width: 16.66%;
+      background: linear-gradient(90deg, var(--color-teal), var(--color-blue-light));
+      box-shadow: 0 0 8px rgba(74, 134, 191, 0.45);
+      transition: width 0.45s ease;
+    }
+
+    /* ==========================================================================
+       4. MAIN STAGE CONTAINER & CARDS
+       ========================================================================== */
+    .main-container {
+      flex: 1;
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .stage-panel {
+      display: none;
+      animation: stageEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .stage-panel.active {
+      display: block;
+    }
+
+    @keyframes stageEnter {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(220, 229, 231, 0.85);
+      padding: 2rem 1.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (max-width: 520px) {
+      .card {
+        padding: 1.5rem 1.2rem;
+        border-radius: 20px;
+      }
+    }
+
+    .card-top-accent {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--color-teal), var(--color-blue));
+    }
+
+    /* ==========================================================================
+       5. MASCOT & SVG ILLUSTRATIONS
+       ========================================================================== */
+    .mascot-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .mascot-float {
+      animation: gentleFloat 3.6s ease-in-out infinite;
+    }
+
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+
+    .mascot-badge {
+      margin-top: 0.45rem;
+      background: var(--color-teal-tint);
+      color: var(--color-teal-dark);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.8rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(95, 42, 115, 0.18);
+    }
+
+    /* ==========================================================================
+       6. BUTTONS
+       ========================================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      font-size: 1rem;
+      font-weight: 800;
+      padding: 0.95rem 1.75rem;
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+      text-decoration: none;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--gradient-brand);
+      color: var(--color-white);
+      box-shadow: 0 8px 20px rgba(95, 42, 115, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      filter: brightness(1.07);
+      box-shadow: 0 12px 28px rgba(95, 42, 115, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    }
+
+    .btn-primary:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: var(--color-teal-tint);
+      color: var(--color-teal-dark);
+      border: 1.5px solid rgba(95, 42, 115, 0.25);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-teal);
+      border-color: var(--color-teal);
+      color: var(--color-white);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(95, 42, 115, 0.22);
+    }
+
+    .btn-video {
+      background: var(--gradient-brand);
+      color: var(--color-white);
+      font-size: 1.05rem;
+      padding: 1.1rem 1.8rem;
+      box-shadow: 0 10px 26px rgba(46, 109, 164, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-video:hover {
+      transform: translateY(-2px) scale(1.01);
+      filter: brightness(1.08);
+      box-shadow: 0 16px 34px rgba(46, 109, 164, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    html[dir="rtl"] .flip-rtl {
+      transform: scaleX(-1);
+    }
+
+    /* ==========================================================================
+       7. STAGE 1 — WELCOME SCREEN
+       ========================================================================== */
+    .campaign-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: var(--color-blue-tint);
+      color: var(--color-blue);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(46, 109, 164, 0.16);
+      margin-bottom: 1rem;
+    }
+
+    .hero-title {
+      font-size: clamp(1.65rem, 4.5vw, 2.3rem);
+      font-weight: 900;
+      color: var(--color-teal-dark);
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+
+    .hero-subtitle {
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: var(--color-blue);
+      text-align: center;
+      max-width: 560px;
+      margin: 0 auto 1.25rem;
+    }
+
+    .hero-intro {
+      background: linear-gradient(180deg, #FBFAFD 0%, var(--color-beige) 100%);
+      border-radius: var(--radius-md);
+      padding: 1.15rem 1.35rem;
+      color: var(--color-text-main);
+      font-size: 0.96rem;
+      text-align: center;
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--color-beige-dark);
+    }
+
+    .meta-chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 1.65rem;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: var(--color-white);
+      border: 1px solid var(--color-border);
+      padding: 0.45rem 0.95rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .meta-chip:hover {
+      border-color: var(--color-mint);
+      transform: translateY(-1px);
+    }
+
+    /* ==========================================================================
+       8. STAGE 2 — PATIENT CASE
+       ========================================================================== */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .section-eyebrow {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-blue);
+      margin-bottom: 0.2rem;
+    }
+
+    .section-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--color-teal-dark);
+    }
+
+    .patient-card-box {
+      background: linear-gradient(180deg, #FBFAFD 0%, #F5F3F8 100%);
+      border: 1.5px solid #DDD8E8;
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .patient-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .patient-avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: var(--gradient-brand);
+      color: var(--color-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 5px 14px rgba(95, 42, 115, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    }
+
+    .patient-name {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--color-teal-dark);
+    }
+
+    .patient-age-tag {
+      display: inline-block;
+      margin-top: 0.2rem;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--color-blue);
+      background: var(--color-blue-tint);
+      padding: 0.15rem 0.65rem;
+      border-radius: var(--radius-pill);
+    }
+
+    .vitals-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.85rem;
+    }
+
+    @media (max-width: 540px) {
+      .vitals-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .vital-item {
+      background: var(--color-white);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 0.8rem 0.95rem;
+      transition: var(--transition);
+    }
+
+    .vital-item:hover {
+      border-color: #C4BCD0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .vital-label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.2rem;
+    }
+
+    .vital-value {
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: var(--color-text-main);
+    }
+
+    .vital-value.highlight-teal {
+      color: var(--color-teal);
+    }
+
+    .vital-value.highlight-warn {
+      color: var(--color-warning);
+    }
+
+    .challenge-callout {
+      background: var(--color-warning-bg);
+      border-inline-start: 5px solid #D97706;
+      border-radius: var(--radius-md);
+      padding: 1.1rem 1.2rem;
+      margin-bottom: 1.15rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+    }
+
+    .challenge-icon {
+      color: #D97706;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .challenge-text {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: #78350F;
+    }
+
+    .mission-box {
+      background: var(--color-teal-tint);
+      border: 1px solid rgba(95, 42, 115, 0.2);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-teal-dark);
+    }
+
+    /* ==========================================================================
+       9. STAGE 3 — INTERACTIVE MCQ QUIZ
+       ========================================================================== */
+    .quiz-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.65rem;
+      gap: 0.5rem;
+    }
+
+    .quiz-counter {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--color-teal-dark);
+    }
+
+    .quiz-step-dots {
+      display: flex;
+      gap: 0.45rem;
+    }
+
+    .step-dot {
+      width: 28px;
+      height: 7px;
+      border-radius: var(--radius-pill);
+      background: var(--color-border);
+      transition: var(--transition);
+    }
+
+    .step-dot.active {
+      background: var(--color-blue);
+    }
+
+    .step-dot.completed {
+      background: var(--color-teal);
+    }
+
+    .question-text {
+      font-size: 1.22rem;
+      font-weight: 800;
+      color: var(--color-teal-dark);
+      margin: 1rem 0 1.25rem;
+      line-height: 1.45;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-bottom: 1.35rem;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: start;
+      background: var(--color-white);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      transition: var(--transition);
+      color: var(--color-text-main);
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--color-teal-light);
+      background: #F6F4FA;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .option-btn.selected {
+      border-color: var(--color-blue);
+      background: var(--color-blue-tint);
+      box-shadow: 0 4px 12px rgba(46, 109, 164, 0.12);
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    .option-btn.correct-reveal {
+      border-color: var(--color-success);
+      background: var(--color-success-bg);
+      color: #0F5132;
+    }
+
+    .option-btn.incorrect-reveal {
+      border-color: #D97706;
+      background: var(--color-warning-bg);
+      color: #78350F;
+    }
+
+    .option-letter {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--color-beige);
+      border: 1px solid var(--color-beige-dark);
+      color: var(--color-teal-dark);
+      font-weight: 800;
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .option-btn.selected .option-letter {
+      background: var(--color-blue);
+      border-color: var(--color-blue);
+      color: var(--color-white);
+    }
+
+    .option-btn.correct-reveal .option-letter {
+      background: var(--color-success);
+      color: var(--color-white);
+    }
+
+    .option-btn.incorrect-reveal .option-letter {
+      background: #D97706;
+      color: var(--color-white);
+    }
+
+    .option-label-text {
+      flex: 1;
+    }
+
+    .feedback-panel {
+      display: none;
+      border-radius: var(--radius-md);
+      padding: 1.15rem 1.25rem;
+      margin-bottom: 1.35rem;
+      animation: stageEnter 0.35s ease forwards;
+    }
+
+    .feedback-panel.visible {
+      display: block;
+    }
+
+    .feedback-panel.is-correct {
+      background: var(--color-success-bg);
+      border: 1.5px solid var(--color-success-border);
+      color: #0F5132;
+    }
+
+    .feedback-panel.is-incorrect {
+      background: var(--color-warning-bg);
+      border: 1.5px solid var(--color-warning-border);
+      color: #78350F;
+    }
+
+    .feedback-header {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 0.45rem;
+    }
+
+    .feedback-correct-answer {
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      padding: 0.4rem 0.7rem;
+      background: rgba(255, 255, 255, 0.72);
+      border-radius: 8px;
+    }
+
+    .feedback-explanation {
+      font-size: 0.94rem;
+      line-height: 1.6;
+    }
+
+    /* ==========================================================================
+       10. STAGE 4 — RESULTS & KIDNEY COMPARISON
+       ========================================================================== */
+    .score-hero {
+      text-align: center;
+      padding: 1.25rem;
+      background: linear-gradient(135deg, var(--color-teal-tint), var(--color-blue-tint));
+      border-radius: var(--radius-md);
+      border: 1px solid #DDD8E8;
+      margin-bottom: 1.35rem;
+    }
+
+    .score-badge {
+      display: inline-flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.25rem;
+      background: var(--color-white);
+      padding: 0.65rem 1.6rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(95, 42, 115, 0.12);
+      box-shadow: var(--shadow-md);
+      margin-bottom: 0.75rem;
+    }
+
+    .score-num {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: var(--color-teal);
+    }
+
+    .score-denom {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+    }
+
+    .performance-msg {
+      font-size: 1.12rem;
+      font-weight: 800;
+      color: var(--color-teal-dark);
+    }
+
+    .core-message-box {
+      background: linear-gradient(135deg, #5F2A73 0%, #2E6DA4 100%);
+      color: var(--color-white);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1.15rem;
+      text-align: center;
+      box-shadow: 0 10px 24px rgba(95, 42, 115, 0.22);
+    }
+
+    .core-message-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .reminder-box {
+      background: var(--color-blue-tint);
+      border-inline-start: 5px solid var(--color-blue);
+      border-radius: var(--radius-md);
+      padding: 1.05rem 1.2rem;
+      margin-bottom: 1.4rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #4A2060;
+    }
+
+    .comparison-section-title {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: var(--color-teal-dark);
+      margin-bottom: 0.85rem;
+      text-align: center;
+    }
+
+    .kidney-compare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.35rem;
+    }
+
+    @media (max-width: 560px) {
+      .kidney-compare-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .compare-card {
+      border-radius: var(--radius-md);
+      padding: 1.1rem;
+      border: 1.5px solid var(--color-border);
+      background: var(--color-white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .compare-card.healthy {
+      border-color: var(--color-success-border);
+      background: #F6FCF9;
+    }
+
+    .compare-card.affected {
+      border-color: var(--color-warning-border);
+      background: #FFFBF5;
+    }
+
+    .compare-card h4 {
+      font-size: 0.98rem;
+      font-weight: 800;
+      margin: 0.6rem 0 0.45rem;
+    }
+
+    .compare-card.healthy h4 {
+      color: var(--color-success);
+    }
+
+    .compare-card.affected h4 {
+      color: var(--color-warning);
+    }
+
+    .compare-list {
+      list-style: none;
+      font-size: 0.85rem;
+      color: var(--color-text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .takeaways-box {
+      background: var(--color-beige);
+      border-radius: var(--radius-md);
+      padding: 1.15rem 1.25rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--color-beige-dark);
+    }
+
+    .takeaways-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--color-teal-dark);
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .takeaways-list {
+      padding-inline-start: 1.25rem;
+      font-size: 0.92rem;
+      color: var(--color-text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    /* ==========================================================================
+       11. STAGE 5 — KIDNEY VIDEO
+       ========================================================================== */
+    .video-stage-card {
+      text-align: center;
+    }
+
+    .video-poster {
+      position: relative;
+      background: linear-gradient(135deg, #5F2A73 0%, #2E6DA4 52%, #2E6DA4 100%);
+      border-radius: var(--radius-lg);
+      padding: 2.4rem 1.5rem;
+      color: var(--color-white);
+      margin: 1.25rem 0 1.5rem;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+
+    .video-poster::before {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07);
+      top: -80px;
+      right: -60px;
+    }
+
+    .video-poster::after {
+      content: "";
+      position: absolute;
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      bottom: -70px;
+      left: -50px;
+    }
+
+    .play-pulse-ring {
+      position: relative;
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      animation: pulseRing 2.2s infinite;
+    }
+
+    @keyframes pulseRing {
+      0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.45); }
+      70% { box-shadow: 0 0 0 18px rgba(255, 255, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+    }
+
+    .play-circle {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: var(--color-white);
+      color: var(--color-teal-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+    }
+
+    .video-poster-title {
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.4rem;
+    }
+
+    .video-poster-sub {
+      font-size: 1rem;
+      opacity: 0.92;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    .video-note {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-top: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .video-alert {
+      display: none;
+      margin-top: 0.9rem;
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-sm);
+      background: var(--color-warning-bg);
+      border: 1px solid var(--color-warning-border);
+      color: #78350F;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .video-alert.visible {
+      display: block;
+    }
+
+    /* Inline video player: plays inside the page, no new tab */
+    .video-player-wrap {
+      display: none;
+      position: relative;
+      margin: 1.25rem 0 1.5rem;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: #1E0F28;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .video-player-wrap.visible {
+      display: block;
+    }
+
+    .video-player-wrap video {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 68vh;
+      background: #1E0F28;
+    }
+
+    .video-player-wrap iframe {
+      display: block;
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      max-height: 68vh;
+      border: 0;
+      background: #1E0F28;
+    }
+
+    /* Fullscreen: let the video fill the screen, controls stay on top */
+    .video-player-wrap:fullscreen {
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-player-wrap:fullscreen video {
+      max-height: 100vh;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Minimal custom control bar: slim, auto-hides while playing */
+    .video-controls {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 10px 8px;
+      background: linear-gradient(to top, rgba(3, 25, 27, 0.68), rgba(3, 25, 27, 0));
+      opacity: 1;
+      transition: opacity 0.35s ease;
+      z-index: 3;
+    }
+
+    .video-controls.vc-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .vc-btn {
+      flex: none;
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.16);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.2s ease;
+    }
+
+    .vc-btn:active {
+      background: rgba(255, 255, 255, 0.32);
+    }
+
+    .vc-btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .vc-time {
+      flex: none;
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 0.72rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      direction: ltr;
+      white-space: nowrap;
+    }
+
+    .vc-seek {
+      flex: 1;
+      min-width: 0;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(to right, #AFD0ED var(--vc-fill, 0%), rgba(255, 255, 255, 0.28) var(--vc-fill, 0%));
+      outline: none;
+      cursor: pointer;
+      margin: 0 2px;
+      padding: 0;
+    }
+
+    .vc-seek::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    }
+
+    .vc-seek::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border: none;
+      border-radius: 50%;
+      background: #FFFFFF;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    }
+
+    .video-end-overlay {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      background: rgba(3, 25, 27, 0.85);
+      color: var(--color-white);
+      text-align: center;
+      padding: 1.5rem;
+      z-index: 4;
+    }
+
+    .video-end-overlay.visible {
+      display: flex;
+    }
+
+    .video-end-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+
+    .video-replay-btn {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .video-replay-btn:hover {
+      color: var(--color-white);
+    }
+
+    /* ==========================================================================
+       12. STAGE 6 — FINAL SCREEN & REFERENCES
+       ========================================================================== */
+    .final-headline {
+      font-size: clamp(1.35rem, 4vw, 1.85rem);
+      font-weight: 900;
+      color: var(--color-teal-dark);
+      text-align: center;
+      line-height: 1.3;
+      margin-bottom: 0.85rem;
+    }
+
+    .final-message {
+      text-align: center;
+      color: var(--color-text-main);
+      font-size: 0.98rem;
+      max-width: 580px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .references-section {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--color-border);
+      text-align: start;
+    }
+
+    .references-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--color-teal-dark);
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .references-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-bottom: 1.35rem;
+    }
+
+    .references-list li {
+      background: var(--color-beige);
+      border: 1px solid var(--color-beige-dark);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 0.95rem;
+      font-size: 0.86rem;
+      transition: var(--transition);
+    }
+
+    .references-list li:hover {
+      border-color: #C4BCD0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .references-list a {
+      color: var(--color-blue);
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      word-break: break-word;
+    }
+
+    .references-list a:hover {
+      text-decoration: underline;
+    }
+
+    .disclaimer-box {
+      background: #F5F3F8;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 0.9rem 1rem;
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      line-height: 1.55;
+    }
+
+    /* ==========================================================================
+       13. FOOTER
+       ========================================================================== */
+    .app-footer {
+      text-align: center;
+      padding: 1.25rem 1rem 2rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+    }
+  
+    /* ==========================================================================
+       14. CLINICAL THEME — restrained palette, institutional type, purposeful motion
+       ========================================================================== */
+    :root {
+      --font-en: "IBM Plex Sans", "IBM Plex Sans Arabic", "Segoe UI", -apple-system, Roboto, Helvetica, Arial, sans-serif;
+      --font-ar: "IBM Plex Sans Arabic", "IBM Plex Sans", "Segoe UI", Tahoma, "Noto Sans Arabic", Arial, sans-serif;
+      --gradient-brand: #5F2A73;
+      --radius-sm: 8px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-sm: 0 1px 2px rgba(95, 42, 115, 0.06);
+      --shadow-md: 0 1px 2px rgba(95, 42, 115, 0.05), 0 8px 24px -12px rgba(95, 42, 115, 0.14);
+      --shadow-lg: 0 2px 4px rgba(95, 42, 115, 0.06), 0 16px 36px -16px rgba(95, 42, 115, 0.28);
+      --ecg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 60'%3E%3Cpath d='M0 30H70L78 30L84 20L90 30H104L110 34L118 4L126 54L134 30H150L158 24L168 30H240' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+    ::selection { background: rgba(46, 109, 164, 0.22); color: var(--color-teal-dark); }
+
+    body { background: #F4F8FC; }
+    html[dir="rtl"] .brand-title, html[dir="rtl"] .btn { letter-spacing: normal; }
+
+    /* Header: flat, hairline */
+    .app-header { background: #FFFFFF; backdrop-filter: none; -webkit-backdrop-filter: none; border-bottom: 1px solid var(--color-border); box-shadow: none; }
+    .brand-icon { background: #5F2A73; border-radius: 10px; box-shadow: none; }
+    .brand-title { letter-spacing: 0.04em; font-weight: 700; }
+    .stage-pill { background: #F5F3F8; color: var(--color-teal-dark); border: 1px solid var(--color-border); border-radius: 8px; font-weight: 600; }
+    .lang-toggle { border: 1px solid #CFC6DA; border-radius: 8px; box-shadow: none; font-weight: 600; }
+    .lang-toggle:hover { background: #5F2A73; border-color: #5F2A73; transform: none; box-shadow: none; }
+    .global-progress-track { height: 3px; background: #E6E0EC; }
+    .global-progress-fill { background: #2E6DA4; box-shadow: none; }
+
+    /* Cards: white, hairline border, small radius */
+    .card { border-radius: 14px; border: 1px solid var(--color-border); box-shadow: var(--shadow-md); }
+    .card-top-accent { height: 3px; background: #5F2A73; }
+    .mascot-badge { background: #F5F3F8; border-color: var(--color-border); color: var(--color-teal-dark); font-weight: 600; }
+
+    /* Typography */
+    .hero-title, .section-title, .final-headline, .question-text { font-weight: 700; }
+    .hero-subtitle { color: var(--color-teal); font-weight: 500; }
+    .btn, .option-btn, .score-num, .quiz-counter, .patient-name { font-weight: 600; }
+    .btn, .score-num { font-weight: 700; }
+
+    /* Recolour the inline SVG artwork to the palette (CSS only) */
+    svg [stroke="#074448"] { stroke: #5F2A73; }
+    svg [fill="#074448"] { fill: #5F2A73; }
+    svg [stroke="#0B5E63"], svg[stroke="#0B5E63"] { stroke: #2E6DA4; }
+    svg [fill="#0B5E63"] { fill: #5F2A73; }
+    svg [fill="#137C82"] { fill: #7B4A91; }
+    svg [fill="#E6F3F3"] { fill: #EAF3FA; }
+    svg [stroke="#B8DCE0"] { stroke: #C9DDEF; }
+    svg [stroke="#1B5A96"], svg[stroke="#1B5A96"] { stroke: #2E6DA4; }
+    svg [stroke="#D9534F"] { stroke: #B83A4B; }
+    stop[stop-color="#38A3A5"] { stop-color: #AFD0ED; }
+    stop[stop-color="#0B5E63"] { stop-color: #5F2A73; }
+
+    /* Motion 1: blood flowing through the renal artery and vein */
+    .mascot-float path[stroke="#1B5A96"], .mascot-float path[stroke="#D9534F"],
+    .compare-card path[stroke="#1B5A96"], .compare-card path[stroke="#D9534F"] {
+      stroke-linecap: butt;
+      stroke-dasharray: 8 6;
+      animation: vesselFlow 1.6s linear infinite;
+    }
+    .mascot-float path[stroke="#D9534F"], .compare-card path[stroke="#D9534F"] { animation-direction: reverse; }
+    /* Motion 2: heartbeat on the final-screen badge */
+    .mascot-float path[fill="#FFFFFF"] { transform-box: fill-box; transform-origin: center; animation: lubdub 1.8s ease-in-out infinite; }
+    /* Motion 3: stressed spots in the affected kidney */
+    .compare-card.affected circle[opacity="0.6"] { transform-box: fill-box; transform-origin: center; animation: stressPulse 2.2s ease-in-out infinite; }
+    .compare-card.affected circle[opacity="0.6"]:nth-of-type(3) { animation-delay: 0.7s; }
+    .compare-card.affected circle[opacity="0.6"]:nth-of-type(4) { animation-delay: 1.4s; }
+
+    /* Welcome, case file */
+    .campaign-tag { background: #F2EAF6; color: var(--color-blue); border: 1px solid #E0D3E8; border-radius: 6px; font-weight: 600; letter-spacing: 0.05em; }
+    .hero-intro { background: #F8F6FB; border: 1px solid var(--color-border); }
+    .meta-chip { border-radius: 8px; box-shadow: none; font-weight: 600; }
+    .meta-chip:hover { transform: none; }
+    .patient-card-box { background: #F8F6FB; border: 1px solid var(--color-border); box-shadow: none; }
+    .patient-avatar { background: #5F2A73; box-shadow: none; }
+    .vital-item { border-radius: 8px; }
+    .vital-item:hover { box-shadow: none; }
+    .challenge-callout { background: #FDF6E9; border-inline-start: 4px solid #C77A0A; }
+    .challenge-icon { color: #C77A0A; }
+    .mission-box { background: #EAF3FA; border: 1px solid #C9DDEF; }
+
+    /* Buttons: solid, no gradients */
+    .btn { border-radius: 10px; }
+    .btn-primary, .btn-video { background: #5F2A73; box-shadow: 0 1px 2px rgba(95, 42, 115, 0.2); }
+    .btn-primary:hover:not(:disabled), .btn-video:hover { background: #4A2060; filter: none; transform: none; box-shadow: 0 4px 12px -4px rgba(95, 42, 115, 0.4); }
+    .btn-secondary { background: #FFFFFF; color: var(--color-teal-dark); border: 1.5px solid #CFC6DA; }
+    .btn-secondary:hover { background: #F5F3F8; color: var(--color-teal-dark); border-color: #5F2A73; transform: none; box-shadow: none; }
+
+    /* Quiz */
+    .option-btn { border: 1.5px solid var(--color-border); border-radius: 10px; }
+    .option-btn:hover:not(:disabled) { transform: none; box-shadow: none; background: #F8F6FB; border-color: #9A7FAB; }
+    .option-btn.selected { background: #EAF3FA; border-color: var(--color-blue); box-shadow: none; }
+    .option-letter { border-radius: 8px; }
+    .step-dot { height: 5px; }
+
+    /* Results */
+    .score-hero { background: #F6F4FA; border: 1px solid var(--color-border); }
+    .score-badge { box-shadow: none; border: 1px solid var(--color-border); border-radius: 12px; }
+    .core-message-box { background: #5F2A73; box-shadow: none; }
+    .reminder-box { background: #EAF3FA; }
+    .compare-card { border-radius: 12px; }
+    .compare-card.healthy { background: #F6FBF8; }
+    .compare-card.affected { background: #FFFAF3; }
+    .takeaways-box, .references-list li { background: #F8F6FB; border-color: var(--color-border); }
+    .takeaways-list li::marker { color: var(--color-teal); }
+    .disclaimer-box { background: #F5F3F8; }
+
+    /* Motion 4: ECG trace behind the key message and the video poster */
+    .core-message-box, .video-poster { position: relative; overflow: hidden; }
+    .core-message-box > *, .video-poster > * { position: relative; z-index: 1; }
+    .core-message-box::before, .video-poster::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      width: auto;
+      border-radius: 0;
+      pointer-events: none;
+      background-color: transparent;
+      background-image: var(--ecg);
+      background-repeat: repeat-x;
+      background-size: 240px 60px;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
+      animation: ecgScroll 8s linear infinite;
+    }
+    .core-message-box::before { top: 50%; height: 60px; margin-top: -30px; opacity: 0.1; }
+
+    /* Video stage */
+    .video-poster { background: #5F2A73; border-radius: 14px; box-shadow: var(--shadow-lg); }
+    .video-poster::before { top: auto; bottom: 20px; height: 60px; opacity: 0.16; }
+    .video-poster::after { display: none; }
+    .play-circle { color: #5F2A73; }
+    .video-player-wrap { border-radius: 14px; }
+    .video-end-overlay { background: rgba(30, 15, 40, 0.9); }
+
+    @keyframes vesselFlow { to { stroke-dashoffset: -14; } }
+    @keyframes lubdub { 0%, 56%, 100% { transform: scale(1); } 14% { transform: scale(1.14); } 28% { transform: scale(1); } 42% { transform: scale(1.09); } }
+    @keyframes stressPulse { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.6); opacity: 0.25; } }
+    @keyframes ecgScroll { to { background-position-x: 240px; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  
+    /* ==========================================================================
+       15. COLOUR BALANCE — blue carries surfaces and structure, purple carries action and key moments
+       ========================================================================== */
+    :root {
+      --ecg-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 60'%3E%3Cpath d='M0 30H70L78 30L84 20L90 30H104L110 34L118 4L126 54L134 30H150L158 24L168 30H240' fill='none' stroke='%235F2A73' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+    body { background: #E9F1F9; }
+    .app-header { background: #DCEAF6; border-bottom: 1px solid #AFD0ED; }
+    .brand-icon { background: #5F2A73; }
+    .stage-pill { background: #FFFFFF; border-color: #AFD0ED; color: #5F2A73; }
+    .lang-toggle { background: #FFFFFF; border-color: #AFD0ED; }
+    .global-progress-track { background: #C9DDEF; }
+    .global-progress-fill { background: #5F2A73; }
+
+    .card { border-color: #C9DDEF; }
+    .card-top-accent { height: 4px; background: linear-gradient(90deg, #5F2A73 0 28%, #AFD0ED 28% 100%); }
+    .mascot-badge { background: #DCEAF6; border-color: #AFD0ED; color: #5F2A73; }
+    svg [fill="#E6F3F3"] { fill: #D6E7F5; }
+    svg [fill="#137C82"] { fill: #5B9BD5; }
+
+    .section-title, .question-text, .patient-name, .comparison-section-title,
+    .references-title, .performance-msg, .quiz-counter { color: #2A2036; }
+
+    .campaign-tag { background: #DCEAF6; color: #5F2A73; border-color: #AFD0ED; }
+    .hero-intro, .patient-card-box { background: #EDF4FB; border-color: #C9DDEF; }
+    .meta-chip { border-color: #C9DDEF; }
+    .vital-item { border-color: #D6E4F1; }
+    .patient-avatar { background: #AFD0ED; color: #5F2A73; }
+    .mission-box { background: #DCEAF6; border-color: #AFD0ED; color: #3E1A4F; }
+    .reminder-box { background: #F3ECF7; border-inline-start-color: #5F2A73; color: #4A2060; }
+
+    .step-dot.completed { background: #7FB1DC; }
+    .step-dot.active { background: #5F2A73; }
+    .option-btn.selected { background: #DCEAF6; border-color: #2E6DA4; }
+    .option-btn.selected .option-letter { background: #2E6DA4; border-color: #2E6DA4; }
+
+    .score-hero { background: #DCEAF6; border-color: #AFD0ED; }
+    .core-message-box { background: #AFD0ED; color: #3E1A4F; }
+    .core-message-box::before { background-image: var(--ecg-dark); opacity: 0.2; }
+    .takeaways-box, .references-list li, .disclaimer-box { background: #EDF4FB; border-color: #D6E4F1; }
+
+    .btn-secondary { background: #DCEAF6; border-color: #AFD0ED; color: #5F2A73; }
+    .btn-secondary:hover { background: #AFD0ED; border-color: #AFD0ED; color: #3E1A4F; }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       STICKY HEADER & LANGUAGE SWITCHER
+       ======================================================================== -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <!-- Minimal Kidney Emblem SVG -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 4c-3.5 0-6.5 2.6-6.5 6.8 0 2.5 1.3 4.2 2.4 5.3 1.1 1.1 1.7 3.9 4.1 3.9 1.7 0 2.6-1.3 2.6-2.9 0-1.4-.9-2.2-.9-3.6 0-1.5 1.1-2.4 1.1-4.2C14.8 6.1 13.7 4 12 4z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title" data-i18n="brandTitle">KIDNEY CASE</span>
+          <span class="brand-sub" data-i18n="brandSub">Diabetic Nephropathy Awareness</span>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <span class="stage-pill" id="stageIndicator">1 / 6</span>
+        <button type="button" class="lang-toggle" id="langToggleBtn" aria-label="Switch language">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <span id="langToggleLabel">العربية</span>
+        </button>
+      </div>
+    </div>
+    <div class="global-progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1" id="globalProgressBar">
+      <div class="global-progress-fill" id="globalProgressFill"></div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       MAIN INTERACTIVE EXPERIENCE
+       ======================================================================== -->
+  <main class="main-container">
+
+    <!-- ======================================================================
+         STAGE 1: WELCOME SCREEN
+         ====================================================================== -->
+    <section class="stage-panel active" id="stage-1" aria-labelledby="welcomeTitle">
+      <div class="card">
+        <div class="card-top-accent"></div>
+
+        <div style="text-align: center;">
+          <span class="campaign-tag" data-i18n="campaignTag">Scientific Medical Event • Interactive Case</span>
+        </div>
+
+        <!-- Friendly Kidney Mascot -->
+        <div class="mascot-wrapper">
+          <div class="mascot-float" aria-hidden="true">
+            <svg width="118" height="118" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="70" cy="70" r="64" fill="#E6F3F3"/>
+              <circle cx="70" cy="70" r="54" fill="#FFFFFF" stroke="#B8DCE0" stroke-width="2"/>
+              <!-- Kidney Body -->
+              <path d="M74 28C51 28 36 45 36 70C36 93 50 112 72 112C84 112 91 103 91 93C91 84 82 79 82 70C82 61 91 56 91 46C91 36 84 28 74 28Z" fill="url(#kidneyGrad1)" stroke="#074448" stroke-width="3" stroke-linejoin="round"/>
+              <!-- Renal Vessels -->
+              <path d="M84 65H104" stroke="#1B5A96" stroke-width="5" stroke-linecap="round"/>
+              <path d="M84 75H104" stroke="#D9534F" stroke-width="5" stroke-linecap="round"/>
+              <!-- Friendly Eyes -->
+              <circle cx="56" cy="64" r="4" fill="#074448"/>
+              <circle cx="71" cy="64" r="4" fill="#074448"/>
+              <circle cx="57.3" cy="62.7" r="1.3" fill="#FFFFFF"/>
+              <circle cx="72.3" cy="62.7" r="1.3" fill="#FFFFFF"/>
+              <!-- Rosy Cheeks -->
+              <ellipse cx="51" cy="72" rx="4.5" ry="2.5" fill="#F4A698" opacity="0.75"/>
+              <ellipse cx="76" cy="72" rx="4.5" ry="2.5" fill="#F4A698" opacity="0.75"/>
+              <!-- Warm Smile -->
+              <path d="M58 75C60.5 79 66.5 79 69 75" stroke="#074448" stroke-width="2.8" stroke-linecap="round"/>
+              <!-- Stethoscope / Medical Badge -->
+              <circle cx="54" cy="92" r="7" fill="#FFFFFF" stroke="#0B5E63" stroke-width="2.2"/>
+              <path d="M54 88.5V95.5M50.5 92H57.5" stroke="#0B5E63" stroke-width="2" stroke-linecap="round"/>
+              <defs>
+                <linearGradient id="kidneyGrad1" x1="36" y1="28" x2="91" y2="112" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#38A3A5"/>
+                  <stop offset="1" stop-color="#0B5E63"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <span class="mascot-badge" data-i18n="mascotCaption">Your Clinical Guide</span>
+        </div>
+
+        <h1 class="hero-title" id="welcomeTitle" data-i18n="welcomeTitle">CAN YOU SPOT THE SILENT THREAT?</h1>
+        <p class="hero-subtitle" data-i18n="welcomeSubtitle">Meet a patient, make your clinical decisions, and discover why early kidney screening matters.</p>
+
+        <div class="hero-intro">
+          <p data-i18n="welcomeIntro">Diabetic kidney disease is a leading cause of chronic kidney complications in Egypt and worldwide—often progressing without early symptoms. Step into the clinic and evaluate a real-world screening scenario.</p>
+        </div>
+
+        <div class="meta-chips">
+          <span class="meta-chip">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B5E63" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span data-i18n="estimatedTime">Estimated time: 2–3 minutes</span>
+          </span>
+          <span class="meta-chip">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B5A96" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 11l3 3L22 4"></path>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg>
+            <span data-i18n="questionCountChip">3 Clinical Questions</span>
+          </span>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="startCaseBtn">
+          <span data-i18n="startCaseBtn">START THE CASE</span>
+          <svg class="flip-rtl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         STAGE 2: PATIENT CASE
+         ====================================================================== -->
+    <section class="stage-panel" id="stage-2" aria-labelledby="caseTitle">
+      <div class="card">
+        <div class="card-top-accent"></div>
+
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow" data-i18n="caseEyebrow">Clinical Case File</div>
+            <h2 class="section-title" id="caseTitle" data-i18n="caseTitle">Patient Profile</h2>
+          </div>
+          <!-- Mini Mascot -->
+          <svg width="54" height="54" viewBox="0 0 140 140" fill="none" aria-hidden="true">
+            <circle cx="70" cy="70" r="64" fill="#E6F3F3"/>
+            <path d="M74 28C51 28 36 45 36 70C36 93 50 112 72 112C84 112 91 103 91 93C91 84 82 79 82 70C82 61 91 56 91 46C91 36 84 28 74 28Z" fill="#137C82" stroke="#074448" stroke-width="3"/>
+            <circle cx="56" cy="64" r="4" fill="#FFFFFF"/>
+            <circle cx="71" cy="64" r="4" fill="#FFFFFF"/>
+            <path d="M58 75C60.5 79 66.5 79 69 75" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="patient-card-box">
+          <div class="patient-header">
+            <div class="patient-avatar" aria-hidden="true">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <div>
+              <div class="patient-name" data-i18n="patientName">Mr. Ahmed</div>
+              <span class="patient-age-tag" data-i18n="patientAge">Age: 52 years</span>
+            </div>
+          </div>
+
+          <div class="vitals-grid">
+            <div class="vital-item">
+              <div class="vital-label" data-i18n="labelDiagnosis">Diagnosis</div>
+              <div class="vital-value highlight-teal" data-i18n="valDiagnosis">Type 2 Diabetes Mellitus</div>
+            </div>
+            <div class="vital-item">
+              <div class="vital-label" data-i18n="labelDuration">Duration of Diabetes</div>
+              <div class="vital-value" data-i18n="valDuration">8 years</div>
+            </div>
+            <div class="vital-item">
+              <div class="vital-label" data-i18n="labelHistory">Medical History</div>
+              <div class="vital-value" data-i18n="valHistory">Hypertension</div>
+            </div>
+            <div class="vital-item">
+              <div class="vital-label" data-i18n="labelSymptoms">Current Symptoms</div>
+              <div class="vital-value" data-i18n="valSymptoms">No noticeable symptoms</div>
+            </div>
+            <div class="vital-item" style="grid-column: 1 / -1;">
+              <div class="vital-label" data-i18n="labelLastAssessment">Last Kidney Assessment</div>
+              <div class="vital-value highlight-warn" data-i18n="valLastAssessment">2 years ago</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="challenge-callout" role="note">
+          <div class="challenge-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div class="challenge-text" data-i18n="caseChallenge">
+            Mr. Ahmed feels completely fine. Could his kidneys still be affected?
+          </div>
+        </div>
+
+        <div class="mission-box">
+          <p data-i18n="caseMission">Your mission: Select the most appropriate kidney screening and assessment tests for Mr. Ahmed based on clinical evidence.</p>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="startQuestionsBtn">
+          <span data-i18n="startQuestionsBtn">START QUESTIONS</span>
+          <svg class="flip-rtl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         STAGE 3: INTERACTIVE MCQ QUIZ
+         ====================================================================== -->
+    <section class="stage-panel" id="stage-3" aria-labelledby="quizQuestionText">
+      <div class="card">
+        <div class="card-top-accent"></div>
+
+        <div class="quiz-top-bar">
+          <span class="quiz-counter" id="quizCounterText">Question 1 of 3</span>
+          <div class="quiz-step-dots" aria-hidden="true">
+            <span class="step-dot active" id="dot-0"></span>
+            <span class="step-dot" id="dot-1"></span>
+            <span class="step-dot" id="dot-2"></span>
+          </div>
+        </div>
+
+        <h2 class="question-text" id="quizQuestionText"></h2>
+
+        <div class="options-list" id="quizOptionsContainer" role="radiogroup" aria-labelledby="quizQuestionText">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <div class="feedback-panel" id="quizFeedbackPanel" role="status" aria-live="polite">
+          <div class="feedback-header" id="feedbackHeader"></div>
+          <div class="feedback-correct-answer" id="feedbackCorrectAnswer"></div>
+          <p class="feedback-explanation" id="feedbackExplanation"></p>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="checkAnswerBtn" disabled>
+          <span data-i18n="checkAnswerBtn">CHECK ANSWER</span>
+        </button>
+
+        <button type="button" class="btn btn-primary" id="nextQuestionBtn" style="display: none;">
+          <span id="nextQuestionBtnLabel" data-i18n="nextQuestionBtn">NEXT QUESTION</span>
+          <svg class="flip-rtl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         STAGE 4: RESULTS AND MEDICAL REVEAL
+         ====================================================================== -->
+    <section class="stage-panel" id="stage-4" aria-labelledby="resultsTitle">
+      <div class="card">
+        <div class="card-top-accent"></div>
+
+        <div class="section-header" style="justify-content: center; text-align: center;">
+          <div>
+            <div class="section-eyebrow" data-i18n="resultsEyebrow">Clinical Assessment Complete</div>
+            <h2 class="section-title" id="resultsTitle" data-i18n="resultsTitle">Your Case Results & Medical Reveal</h2>
+          </div>
+        </div>
+
+        <div class="score-hero">
+          <div class="score-badge">
+            <span class="score-num" id="finalScoreValue">0</span>
+            <span class="score-denom">/ 3</span>
+          </div>
+          <div class="performance-msg" id="performanceMessage"></div>
+        </div>
+
+        <div class="core-message-box">
+          <p class="core-message-title" data-i18n="coreEducationalMsg">
+            Diabetes-related kidney disease may develop silently before noticeable symptoms appear.
+          </p>
+        </div>
+
+        <div class="reminder-box" role="note">
+          <p data-i18n="highlightedReminder">
+            For people with type 2 diabetes, kidney health should be assessed at diagnosis and at least annually using both UACR and eGFR, as clinically appropriate.
+          </p>
+        </div>
+
+        <h3 class="comparison-section-title" data-i18n="comparisonHeading">Visual Comparison: Kidney Health</h3>
+        <div class="kidney-compare-grid">
+          <!-- Healthy Kidney Card -->
+          <div class="compare-card healthy">
+            <svg width="86" height="86" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+              <circle cx="60" cy="60" r="54" fill="#E8F6EF"/>
+              <path d="M64 24C44 24 31 39 31 60C31 80 43 96 62 96C72 96 78 88 78 80C78 72 70 68 70 60C70 52 78 48 78 39C78 31 72 24 64 24Z" fill="#209E68" stroke="#16794C" stroke-width="2.5"/>
+              <path d="M72 56H92" stroke="#1B5A96" stroke-width="4" stroke-linecap="round"/>
+              <path d="M72 64H92" stroke="#D9534F" stroke-width="4" stroke-linecap="round"/>
+              <!-- Checkmark badge -->
+              <circle cx="84" cy="84" r="14" fill="#16794C"/>
+              <path d="M78 84L82 88L90 80" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h4 data-i18n="healthyKidneyTitle">Healthy Kidney</h4>
+            <ul class="compare-list">
+              <li data-i18n="healthyPoint1">Intact glomerular filtration barrier</li>
+              <li data-i18n="healthyPoint2">Retains essential albumin in blood</li>
+              <li data-i18n="healthyPoint3">Normal UACR & stable eGFR</li>
+            </ul>
+          </div>
+
+          <!-- Affected Kidney Card -->
+          <div class="compare-card affected">
+            <svg width="86" height="86" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+              <circle cx="60" cy="60" r="54" fill="#FEF5E7"/>
+              <path d="M64 24C44 24 31 39 31 60C31 80 43 96 62 96C72 96 78 88 78 80C78 72 70 68 70 60C70 52 78 48 78 39C78 31 72 24 64 24Z" fill="#E09F3E" stroke="#B45309" stroke-width="2.5"/>
+              <!-- Microvascular stress indicators -->
+              <circle cx="48" cy="48" r="3" fill="#B45309" opacity="0.6"/>
+              <circle cx="53" cy="68" r="3.5" fill="#B45309" opacity="0.6"/>
+              <circle cx="45" cy="74" r="2.5" fill="#B45309" opacity="0.6"/>
+              <path d="M72 56H92" stroke="#1B5A96" stroke-width="4" stroke-linecap="round"/>
+              <path d="M72 64H92" stroke="#D9534F" stroke-width="4" stroke-linecap="round"/>
+              <!-- Alert badge -->
+              <circle cx="84" cy="84" r="14" fill="#D97706"/>
+              <line x1="84" y1="78" x2="84" y2="85" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"/>
+              <circle cx="84" cy="89" r="1.5" fill="#FFFFFF"/>
+            </svg>
+            <h4 data-i18n="affectedKidneyTitle">Diabetic Kidney Disease</h4>
+            <ul class="compare-list">
+              <li data-i18n="affectedPoint1">Glomerular stress allows albumin leakage</li>
+              <li data-i18n="affectedPoint2">Often silent with zero early symptoms</li>
+              <li data-i18n="affectedPoint3">Confirmed via repeat UACR & eGFR evaluation</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="takeaways-box">
+          <div class="takeaways-title" data-i18n="takeawaysHeading">Key Clinical Learning Points</div>
+          <ul class="takeaways-list">
+            <li data-i18n="takeaway1">Combine UACR (albuminuria) and eGFR (filtration) for comprehensive diabetic kidney screening.</li>
+            <li data-i18n="takeaway2">Absence of symptoms does not rule out early kidney injury—proactive testing is essential.</li>
+            <li data-i18n="takeaway3">A single elevated UACR requires confirmation (commonly 2 of 3 samples over 3–6 months) within clinical context.</li>
+          </ul>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="toVideoStageBtn">
+          <span data-i18n="continueToVideoBtn">CONTINUE TO KIDNEY MESSAGE</span>
+          <svg class="flip-rtl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         STAGE 5: KIDNEY VIDEO
+         ====================================================================== -->
+    <section class="stage-panel" id="stage-5" aria-labelledby="videoTitle">
+      <div class="card video-stage-card">
+        <div class="card-top-accent"></div>
+
+        <!-- Friendly Mascot -->
+        <div class="mascot-wrapper" style="margin-bottom: 0.75rem;">
+          <div class="mascot-float" aria-hidden="true">
+            <svg width="88" height="88" viewBox="0 0 140 140" fill="none">
+              <circle cx="70" cy="70" r="64" fill="#E6F3F3"/>
+              <path d="M74 28C51 28 36 45 36 70C36 93 50 112 72 112C84 112 91 103 91 93C91 84 82 79 82 70C82 61 91 56 91 46C91 36 84 28 74 28Z" fill="#0B5E63" stroke="#074448" stroke-width="3"/>
+              <circle cx="56" cy="64" r="4" fill="#FFFFFF"/>
+              <circle cx="71" cy="64" r="4" fill="#FFFFFF"/>
+              <path d="M58 75C60.5 79 66.5 79 69 75" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <h2 class="section-title" id="videoTitle" data-i18n="videoTitle">A MESSAGE FROM YOUR KIDNEYS</h2>
+        <p class="hero-subtitle" style="margin-bottom: 0.5rem;" data-i18n="videoSubtitle">Your kidneys have something to tell you.</p>
+
+        <div class="video-poster" id="videoPoster">
+          <div class="play-pulse-ring" aria-hidden="true">
+            <div class="play-circle">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="6 4 20 12 6 20 6 4"></polygon>
+              </svg>
+            </div>
+          </div>
+          <div class="video-poster-title" data-i18n="videoCardHeading">Awareness Feature Video</div>
+          <p class="video-poster-sub" data-i18n="videoCardDesc">Watch a brief visual story highlighting why early detection protects kidney health for years to come.</p>
+        </div>
+
+        <div class="video-player-wrap" id="videoPlayerWrap">
+          <video id="kidneyVideo" playsinline preload="metadata"></video>
+          <div class="video-controls" id="videoControls">
+            <button type="button" class="vc-btn" id="vcPlayPause" aria-label="Play or pause">
+              <svg id="vcIconPlay" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="7 4 20 12 7 20 7 4"></polygon></svg>
+              <svg id="vcIconPause" viewBox="0 0 24 24" fill="currentColor" style="display:none" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>
+            </button>
+            <input type="range" class="vc-seek" id="vcSeek" min="0" max="1000" value="0" step="1" aria-label="Seek" />
+            <span class="vc-time" id="vcTime">0:00 / 0:00</span>
+            <button type="button" class="vc-btn" id="vcFullscreen" aria-label="Fullscreen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M16 3h3a2 2 0 0 1 2 2v3"></path><path d="M8 21H5a2 2 0 0 1-2-2v-3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+            </button>
+          </div>
+          <div class="video-end-overlay" id="videoEndOverlay">
+            <div class="video-end-title" data-i18n="videoEndTitle">You watched the kidney message</div>
+            <button type="button" class="btn btn-video" id="videoContinueBtn">
+              <span data-i18n="videoContinueBtn">CONTINUE TO SUMMARY</span>
+              <svg class="flip-rtl" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+            <button type="button" class="video-replay-btn" id="videoReplayBtn" data-i18n="videoReplayBtn">Watch again</button>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-video" id="watchVideoBtn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span data-i18n="watchVideoBtn">WATCH THE KIDNEY MESSAGE</span>
+        </button>
+
+        <div class="video-alert" id="videoUrlNotice" role="alert" data-i18n="videoPlaceholderAlert">
+          Video link is ready to be configured in VIDEO_URL inside index.html.
+        </div>
+
+        <p class="video-note" data-i18n="videoTabNote">Opens the awareness video in a new browser tab.</p>
+
+        <button type="button" class="btn btn-secondary" id="toFinalStageBtn">
+          <span data-i18n="finishExperienceBtn">COMPLETE EXPERIENCE</span>
+          <svg class="flip-rtl" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         STAGE 6: FINAL SCREEN & SCIENTIFIC REFERENCES
+         ====================================================================== -->
+    <section class="stage-panel" id="stage-6" aria-labelledby="finalHeadline">
+      <div class="card">
+        <div class="card-top-accent"></div>
+
+        <!-- Friendly Kidney Mascot -->
+        <div class="mascot-wrapper">
+          <div class="mascot-float" aria-hidden="true">
+            <svg width="108" height="108" viewBox="0 0 140 140" fill="none">
+              <circle cx="70" cy="70" r="64" fill="#E6F3F3"/>
+              <circle cx="70" cy="70" r="54" fill="#FFFFFF" stroke="#B8DCE0" stroke-width="2"/>
+              <path d="M74 28C51 28 36 45 36 70C36 93 50 112 72 112C84 112 91 103 91 93C91 84 82 79 82 70C82 61 91 56 91 46C91 36 84 28 74 28Z" fill="url(#kidneyGradFinal)" stroke="#074448" stroke-width="3"/>
+              <circle cx="56" cy="64" r="4" fill="#074448"/>
+              <circle cx="71" cy="64" r="4" fill="#074448"/>
+              <path d="M58 75C60.5 79 66.5 79 69 75" stroke="#074448" stroke-width="2.8" stroke-linecap="round"/>
+              <!-- Heart Shield Badge -->
+              <circle cx="88" cy="88" r="16" fill="#16794C"/>
+              <path d="M88 94.5C88 94.5 80.5 89.6 80.5 84.8C80.5 82.6 82.2 81 84.3 81C85.7 81 87.1 81.8 88 83C88.9 81.8 90.3 81 91.7 81C93.8 81 95.5 82.6 95.5 84.8C95.5 89.6 88 94.5 88 94.5Z" fill="#FFFFFF"/>
+              <defs>
+                <linearGradient id="kidneyGradFinal" x1="36" y1="28" x2="91" y2="112" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#38A3A5"/>
+                  <stop offset="1" stop-color="#0B5E63"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        <h2 class="final-headline" id="finalHeadline" data-i18n="finalHeadline">
+          KNOW THE RISKS. DETECT EARLY. PROTECT YOUR KIDNEYS.
+        </h2>
+
+        <p class="final-message" data-i18n="finalAwarenessMsg">
+          Thank you for participating in this interactive clinical awareness experience on the epidemiology and early detection of diabetic nephropathy in Egypt. Sharing timely UACR and eGFR screening knowledge empowers patients and clinicians to protect kidney health before symptoms arise.
+        </p>
+
+        <button type="button" class="btn btn-primary" id="restartBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          <span data-i18n="restartBtn">RESTART EXPERIENCE</span>
+        </button>
+
+        <!-- Scientific References -->
+        <div class="references-section">
+          <h3 class="references-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span data-i18n="referencesHeading">Scientific References</span>
+          </h3>
+
+          <ul class="references-list" id="referencesList">
+            <li>
+              <a href="https://archive.cdc.gov/www_cdc_gov/csels/dsepd/ss1978/lesson1/section1.html" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic1">1. What is Epidemiology?</span><span aria-hidden="true"> ↗</span></a>
+            </li>
+            <li>
+              <a href="https://doi.org/10.1002/(SICI)1096-9136(1998120)15:12%3C1045::AID-DIA696%3E3.0.CO;2-L" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic2">2. Risk Factors of Diabetic Kidney Disease</span><span aria-hidden="true"> ↗</span></a>
+            </li>
+            <li>
+              <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8061574/" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic3">3. Causes of Diabetic Kidney Disease</span><span aria-hidden="true"> ↗</span></a>
+            </li>
+            <li>
+              <a href="https://pubmed.ncbi.nlm.nih.gov/16335654/" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic4">4. Mortality and Morbidity in Diabetic Kidney Disease</span><span aria-hidden="true"> ↗</span></a>
+            </li>
+            <li>
+              <a href="https://esnt-online.com/wp-content/uploads/2024/01/ERDS-2020.pdf" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic5">5. Incidence of Diabetic Kidney Disease, with Focus on Egypt</span><span aria-hidden="true"> ↗</span></a>
+            </li>
+            <li>
+              <a href="https://pubmed.ncbi.nlm.nih.gov/29366422/" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic6">6. Prevalence of Diabetic Kidney Disease</span><span aria-hidden="true"> ↗</span></a>
+            </li>
+            <li>
+              <a href="https://www.edaegypt.gov.eg/media/ehvdor31/final-version-eda-diabetes-guide-to-good-pharmacy.pdf" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic7">7. Prevention and Treatment of Diabetic Kidney Disease</span><span aria-hidden="true"> ↗</span></a>
+            </li>
+            <li>
+              <a href="https://doi.org/10.4103/1110-9165.179214" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic8">8. Distribution of Diabetic Kidney Disease by Age, Sex and Region</span><span aria-hidden="true"> ↗</span></a>
+            </li>
+          </ul>
+
+          <div class="disclaimer-box" role="contentinfo">
+            <strong data-i18n="disclaimerLabel">Medical Disclaimer:</strong>
+            <span data-i18n="disclaimerText">
+              This interactive experience presents a fictional patient scenario created solely for medical education and public health awareness at a scientific event. It does not constitute medical advice, diagnosis, or treatment. Clinical decisions and laboratory results must always be interpreted by a qualified healthcare professional in the context of an individual patient's health.
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <span data-i18n="footerText">KIDNEY CASE • Interactive Medical Awareness Experience</span>
+  </footer>
+
+  <!-- ========================================================================
+       APPLICATION LOGIC & BILINGUAL CONTENT
+       ======================================================================== -->
+  <script>
+    /**
+     * ========================================================================
+     * VIDEO CONFIGURATION
+     * Replace the placeholder string below with your external video URL.
+     * ========================================================================
+     */
+    const VIDEO_URL = "https://drive.google.com/file/d/1qannjU7IA5aypDRwAq8Je4n3YFl3Sb56/view?usp=sharing";
+    // Direct stream used by the inline <video> player (same file as VIDEO_URL).
+    const VIDEO_STREAM_URL = "https://kidney-case.surge.sh/video.mp4";
+    // The Drive copy stays the backup: if the stream fails to load, the player
+    // below falls back to the Drive embed iframe automatically.
+    // Drive preview embed used as a fallback if the direct stream cannot play.
+    const VIDEO_EMBED_URL = "https://drive.google.com/file/d/1qannjU7IA5aypDRwAq8Je4n3YFl3Sb56/preview";
+
+    /**
+     * ========================================================================
+     * BILINGUAL TRANSLATION DICTIONARY (ENGLISH & ARABIC)
+     * ========================================================================
+     */
+    const I18N = {
+      en: {
+        brandTitle: "KIDNEY CASE",
+        brandSub: "Diabetic Nephropathy Awareness",
+        langBtnLabel: "العربية",
+        mascotCaption: "Your Clinical Guide",
+        campaignTag: "Scientific Medical Event • Interactive Case",
+        welcomeTitle: "CAN YOU SPOT THE SILENT THREAT?",
+        welcomeSubtitle: "Meet a patient, make your clinical decisions, and discover why early kidney screening matters.",
+        welcomeIntro: "Diabetic kidney disease is a major public health challenge in Egypt and globally—often developing silently without noticeable symptoms. Step into the clinic and evaluate a practical screening case.",
+        estimatedTime: "Estimated time: 2–3 minutes",
+        questionCountChip: "3 Clinical Questions",
+        startCaseBtn: "START THE CASE",
+
+        caseEyebrow: "Clinical Case File",
+        caseTitle: "Patient Profile",
+        patientName: "Mr. Ahmed",
+        patientAge: "Age: 52 years",
+        labelDiagnosis: "Diagnosis",
+        valDiagnosis: "Type 2 Diabetes Mellitus",
+        labelDuration: "Duration of Diabetes",
+        valDuration: "8 years",
+        labelHistory: "Medical History",
+        valHistory: "Hypertension",
+        labelSymptoms: "Current Symptoms",
+        valSymptoms: "No noticeable symptoms",
+        labelLastAssessment: "Last Kidney Assessment",
+        valLastAssessment: "2 years ago",
+        caseChallenge: "Mr. Ahmed feels completely fine. Could his kidneys still be affected?",
+        caseMission: "Your mission: Select the most appropriate kidney screening and assessment tests for Mr. Ahmed.",
+        startQuestionsBtn: "START QUESTIONS",
+
+        questionCounter: (current, total) => `Question ${current} of ${total}`,
+        checkAnswerBtn: "CHECK ANSWER",
+        nextQuestionBtn: "NEXT QUESTION",
+        viewResultsBtn: "VIEW RESULTS & REVEAL",
+        correctHeading: "Correct!",
+        incorrectHeading: "Not quite right",
+        correctAnswerPrefix: "Correct Answer: ",
+
+        resultsEyebrow: "Clinical Assessment Complete",
+        resultsTitle: "Your Case Results & Medical Reveal",
+        perfPerfect: "Outstanding Clinical Insight! You identified every key screening step.",
+        perfGood: "Well Done! You have a strong grasp of early diabetic kidney screening.",
+        perfEncourage: "Good Effort! Review the clinical takeaways below to strengthen your screening approach.",
+        coreEducationalMsg: "Diabetes-related kidney disease may develop silently before noticeable symptoms appear.",
+        highlightedReminder: "For people with type 2 diabetes, kidney health should be assessed at diagnosis and at least annually using both UACR and eGFR, as clinically appropriate.",
+        comparisonHeading: "Visual Comparison: Kidney Health",
+        healthyKidneyTitle: "Healthy Kidney",
+        healthyPoint1: "Intact glomerular filtration barrier",
+        healthyPoint2: "Retains essential albumin in blood",
+        healthyPoint3: "Normal UACR & stable eGFR",
+        affectedKidneyTitle: "Diabetic Kidney Disease",
+        affectedPoint1: "Glomerular stress allows albumin leakage",
+        affectedPoint2: "Often silent with zero early symptoms",
+        affectedPoint3: "Confirmed via repeat UACR & eGFR evaluation",
+        takeawaysHeading: "Key Clinical Learning Points",
+        takeaway1: "Assess both UACR (albuminuria) and eGFR (kidney filtration) for comprehensive diabetic kidney screening.",
+        takeaway2: "Feeling well does not exclude early kidney damage—proactive screening is essential.",
+        takeaway3: "An initial elevated UACR requires repeat confirmation (commonly 2 of 3 elevated samples over 3–6 months) interpreted in clinical context.",
+        continueToVideoBtn: "CONTINUE TO KIDNEY MESSAGE",
+
+        videoTitle: "A MESSAGE FROM YOUR KIDNEYS",
+        videoSubtitle: "Your kidneys have something to tell you.",
+        videoCardHeading: "Awareness Feature Video",
+        videoCardDesc: "Watch a short visual message explaining why timely screening helps protect kidney health.",
+        watchVideoBtn: "WATCH THE KIDNEY MESSAGE",
+        videoPlaceholderAlert: "Video URL has not been set yet. Please update const VIDEO_URL in index.html.",
+        videoTabNote: "Plays right here on this page, with fullscreen support.",
+        videoEndTitle: "You watched the kidney message",
+        videoContinueBtn: "CONTINUE TO SUMMARY",
+        videoReplayBtn: "Watch again",
+        finishExperienceBtn: "CONTINUE TO SUMMARY",
+
+        finalHeadline: "KNOW THE RISKS. DETECT EARLY. PROTECT YOUR KIDNEYS.",
+        finalAwarenessMsg: "Thank you for completing this interactive medical awareness experience on the epidemiology and early detection of diabetic nephropathy in Egypt. Timely UACR and eGFR screening empowers early intervention before symptoms appear.",
+        restartBtn: "RESTART EXPERIENCE",
+        referencesHeading: "Scientific References",
+        refTopic1: "1. What is Epidemiology?",
+        refTopic2: "2. Risk Factors of Diabetic Kidney Disease",
+        refTopic3: "3. Causes of Diabetic Kidney Disease",
+        refTopic4: "4. Mortality and Morbidity in Diabetic Kidney Disease",
+        refTopic5: "5. Incidence of Diabetic Kidney Disease, with Focus on Egypt",
+        refTopic6: "6. Prevalence of Diabetic Kidney Disease",
+        refTopic7: "7. Prevention and Treatment of Diabetic Kidney Disease",
+        refTopic8: "8. Distribution of Diabetic Kidney Disease by Age, Sex and Region",
+        disclaimerLabel: "Medical Disclaimer:",
+        disclaimerText: "This interactive experience presents a fictional patient case designed solely for medical education and awareness at a scientific event. It does not provide medical advice, diagnosis, or treatment. Clinical decisions and laboratory tests must always be interpreted by a qualified healthcare professional.",
+        footerText: "KIDNEY CASE • Interactive Medical Awareness Experience"
+      },
+      ar: {
+        brandTitle: "حالة الكُلى",
+        brandSub: "التوعية باعتلال الكُلى السكري",
+        langBtnLabel: "English",
+        mascotCaption: "دليلك الطبي التفاعلي",
+        campaignTag: "فعالية علمية طبية • حالة تفاعلية",
+        welcomeTitle: "هل يمكنك اكتشاف الخطر الصامت؟",
+        welcomeSubtitle: "تعرّف على حالة مريض، واتخذ قراراتك السريرية، واكتشف لماذا يُعد الفحص المبكر للكُلى أمراً بالغ الأهمية.",
+        welcomeIntro: "يُعد اعتلال الكُلى السكري من أبرز التحديات الصحية في مصر والعالم، وغالباً ما يتطور بصمت دون أعراض واضحة في مراحله الأولى. ابدأ التجربة وقيّم هذه الحالة السريرية.",
+        estimatedTime: "الوقت المتوقع: ٢–٣ دقائق",
+        questionCountChip: "٣ أسئلة سريرية",
+        startCaseBtn: "ابدأ الحالة",
+
+        caseEyebrow: "ملف الحالة السريرية",
+        caseTitle: "بيانات المريض",
+        patientName: "الأستاذ أحمد",
+        patientAge: "العمر: ٥٢ عاماً",
+        labelDiagnosis: "التشخيص",
+        valDiagnosis: "داء السكري من النوع الثاني",
+        labelDuration: "مدة الإصابة بالسكري",
+        valDuration: "٨ سنوات",
+        labelHistory: "التاريخ المرضي",
+        valHistory: "ارتفاع ضغط الدم",
+        labelSymptoms: "الأعراض الحالية",
+        valSymptoms: "لا توجد أعراض ملحوظة",
+        labelLastAssessment: "آخر تقييم لوظائف الكُلى",
+        valLastAssessment: "منذ سنتين",
+        caseChallenge: "يشعر الأستاذ أحمد أنه بصحة جيدة تماماً. هل يمكن أن تكون كليتاه متأثرتين رغم ذلك؟",
+        caseMission: "مهمتك: اختيار فحوصات التقييم والكشف المبكر الأنسب لصحة الكُلى لدى الأستاذ أحمد.",
+        startQuestionsBtn: "ابدأ الأسئلة",
+
+        questionCounter: (current, total) => `السؤال ${current} من ${total}`,
+        checkAnswerBtn: "تحقق من الإجابة",
+        nextQuestionBtn: "السؤال التالي",
+        viewResultsBtn: "عرض النتيجة والتفسير الطبي",
+        correctHeading: "إجابة صحيحة!",
+        incorrectHeading: "إجابة غير دقيقة",
+        correctAnswerPrefix: "الإجابة الصحيحة: ",
+
+        resultsEyebrow: "اكتمل التقييم السريري",
+        resultsTitle: "نتيجتك والتوضيح الطبي",
+        perfPerfect: "أداء سريري متميز! لقد اخترت جميع خطوات الفحص المبكر الصحيحة.",
+        perfGood: "أحسنت! لديك فهم جيد لأساسيات الفحص المبكر للكُلى لدى مرضى السكري.",
+        perfEncourage: "محاولة جيدة! راجع النقاط التعليمية التالية لتعزيز معرفتك بالفحص المبكر.",
+        coreEducationalMsg: "قد يتطور مرض الكُلى المرتبط بالسكري بصمت قبل ظهور أي أعراض ملحوظة.",
+        highlightedReminder: "بالنسبة للمصابين بداء السكري من النوع الثاني، يجب تقييم صحة الكُلى عند التشخيص وسنوياً على الأقل باستخدام كلٍّ من فحص نسبة الألبومين إلى الكرياتينين في البول (UACR) ومعدل الترشيح الكبيبي التقديري (eGFR)، وفقاً لما يقتضيه التقييم السريري.",
+        comparisonHeading: "مقارنة توضيحية: صحة الكُلى",
+        healthyKidneyTitle: "كُلى سليمة",
+        healthyPoint1: "حاجز ترشيح كبيبي سليم",
+        healthyPoint2: "يحتفظ بالألبومين الضروري في الدم",
+        healthyPoint3: "نسبة UACR طبيعية ومعدل eGFR مستقر",
+        affectedKidneyTitle: "اعتلال الكُلى السكري",
+        affectedPoint1: "إجهاد الكبيبات يسمح بتسرب الألبومين في البول",
+        affectedPoint2: "غالباً ما يكون صامتاً بلا أعراض مبكرة",
+        affectedPoint3: "يُؤكَّد عبر إعادة تقييم UACR و eGFR سريرياً",
+        takeawaysHeading: "أهم النقاط التعليمية",
+        takeaway1: "الجمع بين فحص UACR (للكشف عن الألبومين) و eGFR (لتقدير كفاءة الترشيح) يوفر تقييماً شاملاً للكُلى.",
+        takeaway2: "عدم وجود أعراض لا ينفي وجود تأثر مبكر في الكُلى، مما يجعل الفحص الدوري ضرورياً.",
+        takeaway3: "ارتفاع نتيجة UACR لمرة واحدة يتطلب إعادة الفحص للتأكد (عادةً عينتان مرتفعتان من أصل ٣ خلال ٣–٦ أشهر) وتفسيرها سريرياً.",
+        continueToVideoBtn: "المتابعة إلى رسالة الكُلى",
+
+        videoTitle: "رسالة من كليتيك",
+        videoSubtitle: "كليتاك لديهما ما تودّان إخبارك به.",
+        videoCardHeading: "فيديو التوعية الصحية",
+        videoCardDesc: "شاهد رسالة مرئية قصيرة توضح كيف يساهم الفحص المبكر في حماية صحة كليتيك.",
+        watchVideoBtn: "شاهد رسالة الكُلى",
+        videoPlaceholderAlert: "لم يتم إضافة رابط الفيديو بعد. يرجى تحديث المتغير VIDEO_URL داخل ملف index.html.",
+        videoTabNote: "يُعرض الفيديو هنا داخل الصفحة نفسها، مع إمكانية العرض بملء الشاشة.",
+        videoEndTitle: "لقد شاهدت رسالة الكُلى",
+        videoContinueBtn: "المتابعة إلى الملخص",
+        videoReplayBtn: "إعادة المشاهدة",
+        finishExperienceBtn: "الانتقال إلى الخاتمة",
+
+        finalHeadline: "اعرف المخاطر. اكتشف مبكراً. احمِ كليتيك.",
+        finalAwarenessMsg: "شكراً لمشاركتك في هذه التجربة الطبية التفاعلية حول وبائيات اعتلال الكُلى السكري وأهمية الكشف المبكر في مصر. المعرفة والفحص الدوري عبر UACR و eGFR يساعدان في حماية الكُلى قبل ظهور الأعراض.",
+        restartBtn: "إعادة التجربة",
+        referencesHeading: "المراجع العلمية",
+        refTopic1: "١. ما هو علم الوبائيات؟",
+        refTopic2: "٢. عوامل خطر الإصابة باعتلال الكُلى السكري",
+        refTopic3: "٣. أسباب اعتلال الكُلى السكري وآليات حدوثه",
+        refTopic4: "٤. الوفيات والمضاعفات في اعتلال الكُلى السكري",
+        refTopic5: "٥. معدل حدوث اعتلال الكُلى السكري، مع التركيز على مصر",
+        refTopic6: "٦. معدل انتشار اعتلال الكُلى السكري",
+        refTopic7: "٧. الوقاية من اعتلال الكُلى السكري وعلاجه",
+        refTopic8: "٨. توزيع اعتلال الكُلى السكري حسب العمر والجنس والمنطقة",
+        disclaimerLabel: "إخلاء مسؤولية طبي:",
+        disclaimerText: "تقدم هذه التجربة التفاعلية حالة مريض افتراضية أُعدّت لأغراض التعليم الطبي والتوعية الصحية خلال فعالية علمية فقط، ولا تُعد استشارة طبية أو تشخيصاً أو علاجاً. يجب دائماً تفسير الفحوصات المخبرية واتخاذ القرارات السريرية بواسطة طبيب مختص.",
+        footerText: "حالة الكُلى • تجربة توعية طبية تفاعلية"
+      }
+    };
+
+    /**
+     * ========================================================================
+     * QUIZ QUESTIONS DATA (STRICTLY 3 QUESTIONS, 3 OPTIONS EACH)
+     * ========================================================================
+     */
+    const QUIZ_QUESTIONS = [
+      {
+        id: 1,
+        correctIndex: 0,
+        en: {
+          question: "Which tests are recommended to assess kidney health in a person with type 2 diabetes?",
+          options: [
+            "Urine Albumin-to-Creatinine Ratio (UACR) + eGFR.",
+            "Urine culture + Complete Blood Count.",
+            "Abdominal X-ray + ECG."
+          ],
+          explanation: "UACR detects albumin in urine, while eGFR estimates how well the kidneys filter blood. Both provide complementary information and are recommended for kidney assessment in people with type 2 diabetes."
+        },
+        ar: {
+          question: "ما الفحوصات الموصى بها لتقييم صحة الكُلى لدى شخص مصاب بداء السكري من النوع الثاني؟",
+          options: [
+            "نسبة الألبومين إلى الكرياتينين في البول (UACR) + معدل الترشيح الكبيبي التقديري (eGFR).",
+            "مزرعة بول + صورة دم كاملة.",
+            "أشعة سينية على البطن + تخطيط كهربية القلب."
+          ],
+          explanation: "يكشف فحص UACR عن وجود الألبومين في البول، بينما يقدّر فحص eGFR كفاءة الكُلى في ترشيح الدم. يوفر كلا الفحصين معلومات متكاملة ويُوصى بهما لتقييم الكُلى لدى المصابين بالسكري من النوع الثاني."
+        }
+      },
+      {
+        id: 2,
+        correctIndex: 0,
+        en: {
+          question: "Which test may reveal early kidney damage even when the patient feels well?",
+          options: [
+            "Urine UACR.",
+            "Blood glucose alone.",
+            "Urine colour."
+          ],
+          explanation: "Increased urine albumin can be an early marker of kidney damage. Diabetic kidney disease may have no noticeable symptoms in its early stages, which makes screening important."
+        },
+        ar: {
+          question: "أي فحص قد يكشف عن تأثر مبكر في الكُلى حتى عندما يشعر المريض أنه بصحة جيدة؟",
+          options: [
+            "فحص نسبة الألبومين إلى الكرياتينين في البول (UACR).",
+            "قياس مستوى السكر في الدم وحده.",
+            "ملاحظة لون البول."
+          ],
+          explanation: "قد يكون ارتفاع الألبومين في البول مؤشراً مبكراً على تأثر الكُلى. وغالباً لا يسبب مرض الكُلى السكري أعراضاً ملحوظة في مراحله المبكرة، مما يجعل الفحص الدوري أمراً مهماً."
+        }
+      },
+      {
+        id: 3,
+        correctIndex: 1,
+        en: {
+          question: "If an initial UACR result is elevated, what is the most appropriate next step?",
+          options: [
+            "Assume permanent kidney failure.",
+            "Repeat testing to confirm whether albuminuria persists.",
+            "Ignore the result if there are no symptoms."
+          ],
+          explanation: "UACR can vary. An abnormal result should be confirmed. Commonly, 2 out of 3 elevated samples over 3–6 months support persistent albuminuria. A clinician should interpret results in context."
+        },
+        ar: {
+          question: "إذا كانت نتيجة فحص UACR الأولية مرتفعة، فما الخطوة التالية الأنسب؟",
+          options: [
+            "افتراض وجود فشل كلوي دائم.",
+            "إعادة الفحص للتأكد مما إذا كانت بيلة الألبومين مستمرة.",
+            "تجاهل النتيجة طالما لا توجد أعراض."
+          ],
+          explanation: "يمكن أن تتغير قيمة UACR، لذا يجب تأكيد أي نتيجة غير طبيعية. وبشكل شائع، تدعم عينتان مرتفعتان من أصل ٣ عينات خلال ٣ إلى ٦ أشهر وجود بيلة ألبومين مستمرة، ويجب على الطبيب تفسير النتائج في سياقها السريري."
+        }
+      }
+    ];
+
+    /**
+     * ========================================================================
+     * APPLICATION STATE
+     * ========================================================================
+     */
+    const state = {
+      lang: "en",
+      currentStage: 1,
+      currentQuestionIndex: 0,
+      selectedOptionIndex: null,
+      isSubmitted: false,
+      userAnswers: [null, null, null], // stores selected option index per question
+      videoStarted: false,
+      videoUsingFallback: false
+    };
+
+    const OPTION_LETTERS_EN = ["A", "B", "C"];
+    const OPTION_LETTERS_AR = ["أ", "ب", "ج"];
+
+    /**
+     * ========================================================================
+     * DOM REFERENCES
+     * ========================================================================
+     */
+    const els = {
+      html: document.documentElement,
+      langToggleBtn: document.getElementById("langToggleBtn"),
+      langToggleLabel: document.getElementById("langToggleLabel"),
+      stageIndicator: document.getElementById("stageIndicator"),
+      globalProgressBar: document.getElementById("globalProgressBar"),
+      globalProgressFill: document.getElementById("globalProgressFill"),
+
+      startCaseBtn: document.getElementById("startCaseBtn"),
+      startQuestionsBtn: document.getElementById("startQuestionsBtn"),
+
+      quizCounterText: document.getElementById("quizCounterText"),
+      quizQuestionText: document.getElementById("quizQuestionText"),
+      quizOptionsContainer: document.getElementById("quizOptionsContainer"),
+      quizFeedbackPanel: document.getElementById("quizFeedbackPanel"),
+      feedbackHeader: document.getElementById("feedbackHeader"),
+      feedbackCorrectAnswer: document.getElementById("feedbackCorrectAnswer"),
+      feedbackExplanation: document.getElementById("feedbackExplanation"),
+      checkAnswerBtn: document.getElementById("checkAnswerBtn"),
+      nextQuestionBtn: document.getElementById("nextQuestionBtn"),
+      nextQuestionBtnLabel: document.getElementById("nextQuestionBtnLabel"),
+
+      finalScoreValue: document.getElementById("finalScoreValue"),
+      performanceMessage: document.getElementById("performanceMessage"),
+      toVideoStageBtn: document.getElementById("toVideoStageBtn"),
+
+      watchVideoBtn: document.getElementById("watchVideoBtn"),
+      videoUrlNotice: document.getElementById("videoUrlNotice"),
+      videoPoster: document.getElementById("videoPoster"),
+      videoPlayerWrap: document.getElementById("videoPlayerWrap"),
+      kidneyVideo: document.getElementById("kidneyVideo"),
+      videoControls: document.getElementById("videoControls"),
+      vcPlayPause: document.getElementById("vcPlayPause"),
+      vcIconPlay: document.getElementById("vcIconPlay"),
+      vcIconPause: document.getElementById("vcIconPause"),
+      vcSeek: document.getElementById("vcSeek"),
+      vcTime: document.getElementById("vcTime"),
+      vcFullscreen: document.getElementById("vcFullscreen"),
+      videoEndOverlay: document.getElementById("videoEndOverlay"),
+      videoContinueBtn: document.getElementById("videoContinueBtn"),
+      videoReplayBtn: document.getElementById("videoReplayBtn"),
+      toFinalStageBtn: document.getElementById("toFinalStageBtn"),
+
+      restartBtn: document.getElementById("restartBtn")
+    };
+
+    /**
+     * ========================================================================
+     * NAVIGATION & STAGE TRANSITIONS
+     * ========================================================================
+     */
+    function goToStage(stageNum) {
+      state.currentStage = stageNum;
+
+      document.querySelectorAll(".stage-panel").forEach((panel, idx) => {
+        panel.classList.toggle("active", idx + 1 === stageNum);
+      });
+
+      // Update header progress
+      const pct = (stageNum / 6) * 100;
+      els.globalProgressFill.style.width = `${pct}%`;
+      els.globalProgressBar.setAttribute("aria-valuenow", String(stageNum));
+      updateStageIndicatorText();
+
+      if (stageNum === 3) {
+        renderQuestion();
+      } else if (stageNum === 4) {
+        renderResults();
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      saveProgress();
+    }
+
+    function updateStageIndicatorText() {
+      if (state.lang === "ar") {
+        const arNums = ["١", "٢", "٣", "٤", "٥", "٦"];
+        els.stageIndicator.textContent = `${arNums[state.currentStage - 1]} / ٦`;
+      } else {
+        els.stageIndicator.textContent = `${state.currentStage} / 6`;
+      }
+    }
+
+    /**
+     * ========================================================================
+     * QUIZ RENDERING & INTERACTION
+     * ========================================================================
+     */
+    function renderQuestion() {
+      const qIndex = state.currentQuestionIndex;
+      const qObj = QUIZ_QUESTIONS[qIndex];
+      const localized = qObj[state.lang];
+      const dict = I18N[state.lang];
+      const letters = state.lang === "ar" ? OPTION_LETTERS_AR : OPTION_LETTERS_EN;
+
+      // Update counter & step dots
+      els.quizCounterText.textContent = dict.questionCounter(qIndex + 1, QUIZ_QUESTIONS.length);
+      for (let i = 0; i < 3; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        dot.classList.remove("active", "completed");
+        if (i < qIndex) dot.classList.add("completed");
+        if (i === qIndex) dot.classList.add("active");
+      }
+
+      // Render question text
+      els.quizQuestionText.textContent = localized.question;
+
+      // Render options
+      els.quizOptionsContainer.innerHTML = "";
+      localized.options.forEach((optText, optIdx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "option-btn";
+        btn.setAttribute("role", "radio");
+        btn.setAttribute("aria-checked", state.selectedOptionIndex === optIdx ? "true" : "false");
+
+        if (state.selectedOptionIndex === optIdx) {
+          btn.classList.add("selected");
+        }
+
+        if (state.isSubmitted) {
+          btn.disabled = true;
+          if (optIdx === qObj.correctIndex) {
+            btn.classList.add("correct-reveal");
+          } else if (optIdx === state.selectedOptionIndex && optIdx !== qObj.correctIndex) {
+            btn.classList.add("incorrect-reveal");
+          }
+        } else {
+          btn.addEventListener("click", () => selectOption(optIdx));
+        }
+
+        const letterSpan = document.createElement("span");
+        letterSpan.className = "option-letter";
+        letterSpan.textContent = letters[optIdx];
+
+        const textSpan = document.createElement("span");
+        textSpan.className = "option-label-text";
+        textSpan.textContent = optText;
+
+        btn.appendChild(letterSpan);
+        btn.appendChild(textSpan);
+        els.quizOptionsContainer.appendChild(btn);
+      });
+
+      // Handle feedback & action buttons
+      if (state.isSubmitted) {
+        renderFeedbackPanel();
+        els.checkAnswerBtn.style.display = "none";
+        els.nextQuestionBtn.style.display = "inline-flex";
+        els.nextQuestionBtnLabel.textContent =
+          qIndex === QUIZ_QUESTIONS.length - 1 ? dict.viewResultsBtn : dict.nextQuestionBtn;
+      } else {
+        els.quizFeedbackPanel.classList.remove("visible", "is-correct", "is-incorrect");
+        els.checkAnswerBtn.style.display = "inline-flex";
+        els.checkAnswerBtn.disabled = state.selectedOptionIndex === null;
+        els.nextQuestionBtn.style.display = "none";
+      }
+    }
+
+    function selectOption(optIdx) {
+      if (state.isSubmitted) return;
+      state.selectedOptionIndex = optIdx;
+      renderQuestion();
+      saveProgress();
+    }
+
+    function submitAnswer() {
+      if (state.selectedOptionIndex === null || state.isSubmitted) return;
+      state.isSubmitted = true;
+      state.userAnswers[state.currentQuestionIndex] = state.selectedOptionIndex;
+      renderQuestion();
+      saveProgress();
+    }
+
+    function renderFeedbackPanel() {
+      const qObj = QUIZ_QUESTIONS[state.currentQuestionIndex];
+      const localized = qObj[state.lang];
+      const dict = I18N[state.lang];
+      const letters = state.lang === "ar" ? OPTION_LETTERS_AR : OPTION_LETTERS_EN;
+      const isCorrect = state.selectedOptionIndex === qObj.correctIndex;
+
+      els.quizFeedbackPanel.className = `feedback-panel visible ${isCorrect ? "is-correct" : "is-incorrect"}`;
+
+      const iconSvg = isCorrect
+        ? `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`
+        : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+
+      els.feedbackHeader.innerHTML = `${iconSvg}<span>${isCorrect ? dict.correctHeading : dict.incorrectHeading}</span>`;
+
+      const correctLetter = letters[qObj.correctIndex];
+      const correctText = localized.options[qObj.correctIndex];
+      els.feedbackCorrectAnswer.textContent = `${dict.correctAnswerPrefix}${correctLetter}. ${correctText}`;
+      els.feedbackExplanation.textContent = localized.explanation;
+    }
+
+    function handleNextQuestion() {
+      if (state.currentQuestionIndex < QUIZ_QUESTIONS.length - 1) {
+        state.currentQuestionIndex += 1;
+        state.selectedOptionIndex = null;
+        state.isSubmitted = false;
+        renderQuestion();
+        saveProgress();
+      } else {
+        goToStage(4);
+      }
+    }
+
+    /**
+     * ========================================================================
+     * SCORE CALCULATION & RESULTS RENDERING
+     * ========================================================================
+     */
+    function calculateScore() {
+      let score = 0;
+      QUIZ_QUESTIONS.forEach((q, idx) => {
+        if (state.userAnswers[idx] === q.correctIndex) {
+          score += 1;
+        }
+      });
+      return score;
+    }
+
+    function renderResults() {
+      const score = calculateScore();
+      const dict = I18N[state.lang];
+
+      els.finalScoreValue.textContent = String(score);
+
+      if (score === 3) {
+        els.performanceMessage.textContent = dict.perfPerfect;
+      } else if (score === 2) {
+        els.performanceMessage.textContent = dict.perfGood;
+      } else {
+        els.performanceMessage.textContent = dict.perfEncourage;
+      }
+    }
+
+    /**
+     * ========================================================================
+     * BILINGUAL SWITCHING (EN <-> AR WITH PROPER RTL SUPPORT)
+     * ========================================================================
+     */
+    function applyLanguage(lang) {
+      state.lang = lang;
+      const isArabic = lang === "ar";
+      const dict = I18N[lang];
+
+      els.html.setAttribute("lang", lang);
+      els.html.setAttribute("dir", isArabic ? "rtl" : "ltr");
+      els.langToggleLabel.textContent = dict.langBtnLabel;
+
+      // Update all static data-i18n elements
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        if (typeof dict[key] === "string") {
+          el.textContent = dict[key];
+        }
+      });
+
+      updateStageIndicatorText();
+
+      // Re-render dynamic views if currently active
+      if (state.currentStage === 3) {
+        renderQuestion();
+      } else if (state.currentStage === 4) {
+        renderResults();
+      }
+
+      saveProgress();
+    }
+
+    function toggleLanguage() {
+      applyLanguage(state.lang === "en" ? "ar" : "en");
+    }
+
+    /**
+     * ========================================================================
+     * PROGRESS PERSISTENCE (SESSION STORAGE)
+     * Keeps the visitor on their current step if the page reloads or the
+     * browser sends them back here, so nobody loses their place.
+     * ========================================================================
+     */
+    const STORAGE_KEY = "kidneyCaseProgressV1";
+
+    function saveProgress() {
+      try {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+          lang: state.lang,
+          stage: state.currentStage,
+          q: state.currentQuestionIndex,
+          sel: state.selectedOptionIndex,
+          sub: state.isSubmitted,
+          ans: state.userAnswers
+        }));
+      } catch (err) { /* storage unavailable: page still works normally */ }
+    }
+
+    function restoreProgress() {
+      let saved = null;
+      try {
+        saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "null");
+      } catch (err) {
+        saved = null;
+      }
+      if (!saved || typeof saved.stage !== "number") return false;
+
+      state.currentQuestionIndex = typeof saved.q === "number" ? saved.q : 0;
+      state.selectedOptionIndex = typeof saved.sel === "number" ? saved.sel : null;
+      state.isSubmitted = !!saved.sub;
+      state.userAnswers = Array.isArray(saved.ans) && saved.ans.length === 3 ? saved.ans : [null, null, null];
+
+      applyLanguage(saved.lang === "ar" ? "ar" : "en");
+      goToStage(Math.min(6, Math.max(1, saved.stage)));
+      return true;
+    }
+
+    /**
+     * ========================================================================
+     * MINIMAL VIDEO CONTROLS (slim bar, auto-hides during playback)
+     * ========================================================================
+     */
+    const VC_HIDE_MS = 3000;
+    let vcHideTimer = null;
+
+    function vcFormatTime(seconds) {
+      if (!isFinite(seconds) || seconds < 0) seconds = 0;
+      const total = Math.floor(seconds);
+      return Math.floor(total / 60) + ":" + String(total % 60).padStart(2, "0");
+    }
+
+    function vcShowControls() {
+      if (!els.videoControls) return;
+      els.videoControls.classList.remove("vc-hidden");
+      if (vcHideTimer) { clearTimeout(vcHideTimer); vcHideTimer = null; }
+    }
+
+    function vcScheduleHide() {
+      if (!els.videoControls) return;
+      if (vcHideTimer) clearTimeout(vcHideTimer);
+      vcHideTimer = setTimeout(() => {
+        if (els.kidneyVideo && !els.kidneyVideo.paused && !els.kidneyVideo.ended) {
+          els.videoControls.classList.add("vc-hidden");
+        }
+      }, VC_HIDE_MS);
+    }
+
+    function vcUpdatePlayIcon() {
+      const playing = els.kidneyVideo && !els.kidneyVideo.paused && !els.kidneyVideo.ended;
+      els.vcIconPlay.style.display = playing ? "none" : "";
+      els.vcIconPause.style.display = playing ? "" : "none";
+    }
+
+    function vcUpdateProgress() {
+      const video = els.kidneyVideo;
+      if (!video) return;
+      if (isFinite(video.duration) && video.duration > 0) {
+        const ratio = Math.min(1, video.currentTime / video.duration);
+        els.vcSeek.value = Math.round(ratio * 1000);
+        els.vcSeek.style.setProperty("--vc-fill", (ratio * 100).toFixed(1) + "%");
+        els.vcTime.textContent = vcFormatTime(video.currentTime) + " / " + vcFormatTime(video.duration);
+      } else {
+        els.vcSeek.value = 0;
+        els.vcSeek.style.setProperty("--vc-fill", "0%");
+        els.vcTime.textContent = "0:00 / 0:00";
+      }
+    }
+
+    function vcTogglePlay() {
+      const video = els.kidneyVideo;
+      if (!video || state.videoUsingFallback) return;
+      if (video.paused || video.ended) {
+        const p = video.play();
+        if (p && typeof p.catch === "function") p.catch(() => {});
+      } else {
+        video.pause();
+      }
+    }
+
+    // Scroll the whole player (and its slim control bar) into view once
+    // playback is running; the video grows when metadata loads, which would
+    // cancel a smooth scroll started earlier.
+    function vcEnsurePlayerInView() {
+      const r = els.videoPlayerWrap.getBoundingClientRect();
+      if (r.bottom > window.innerHeight || r.top < 0) {
+        els.videoPlayerWrap.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    function vcToggleFullscreen() {
+      const wrap = els.videoPlayerWrap;
+      const video = els.kidneyVideo;
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen;
+        if (exit) exit.call(document);
+        return;
+      }
+      if (wrap.requestFullscreen) {
+        const r = wrap.requestFullscreen();
+        if (r && typeof r.catch === "function") {
+          r.catch(() => { if (video && video.webkitEnterFullscreen) video.webkitEnterFullscreen(); });
+        }
+      } else if (wrap.webkitRequestFullscreen) {
+        wrap.webkitRequestFullscreen();
+      } else if (video && video.webkitEnterFullscreen) {
+        video.webkitEnterFullscreen();
+      }
+    }
+
+    /**
+     * ========================================================================
+     * VIDEO LAUNCHER & RESTART HANDLERS
+     * ========================================================================
+     */
+    function handleWatchVideo() {
+      const url = (VIDEO_URL || "").trim();
+      if (!url || url === "PASTE_YOUR_VIDEO_URL_HERE") {
+        els.videoUrlNotice.classList.add("visible");
+        return;
+      }
+      els.videoUrlNotice.classList.remove("visible");
+
+      // Play inside the page: hide the poster, reveal the inline player.
+      els.videoPoster.style.display = "none";
+      els.watchVideoBtn.style.display = "none";
+      els.videoPlayerWrap.classList.add("visible");
+
+      if (!state.videoUsingFallback) {
+        const video = els.kidneyVideo;
+        if (!state.videoStarted) {
+          video.src = VIDEO_STREAM_URL;
+        }
+        state.videoStarted = true;
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(() => { /* the visitor can press play on the player itself */ });
+        }
+      }
+      saveProgress();
+    }
+
+    function activateIframeFallback() {
+      if (state.videoUsingFallback) return;
+      state.videoUsingFallback = true;
+      if (els.kidneyVideo && els.kidneyVideo.parentNode) {
+        els.kidneyVideo.parentNode.removeChild(els.kidneyVideo);
+      }
+      const iframe = document.createElement("iframe");
+      iframe.src = VIDEO_EMBED_URL;
+      iframe.title = "Kidney awareness video";
+      iframe.setAttribute("allow", "autoplay; fullscreen; encrypted-media; picture-in-picture");
+      iframe.setAttribute("allowfullscreen", "");
+      iframe.allowFullscreen = true;
+      els.videoControls.style.display = "none";
+      els.videoPlayerWrap.insertBefore(iframe, els.videoEndOverlay);
+      // The Drive iframe offers its own fullscreen button; when it cannot fire
+      // an end event, the COMPLETE EXPERIENCE button below stays the way onward.
+    }
+
+    function handleVideoEnded() {
+      els.videoEndOverlay.classList.add("visible");
+    }
+
+    function handleVideoReplay() {
+      els.videoEndOverlay.classList.remove("visible");
+      if (!state.videoUsingFallback && els.kidneyVideo) {
+        els.kidneyVideo.currentTime = 0;
+        const playPromise = els.kidneyVideo.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(() => {});
+        }
+      }
+    }
+
+    function resetVideoStage() {
+      els.videoEndOverlay.classList.remove("visible");
+      els.videoPlayerWrap.classList.remove("visible");
+      els.videoPoster.style.display = "";
+      els.watchVideoBtn.style.display = "";
+      if (!state.videoUsingFallback && els.kidneyVideo) {
+        els.kidneyVideo.pause();
+        els.kidneyVideo.removeAttribute("src");
+        els.kidneyVideo.load();
+      }
+      vcShowControls();
+      vcUpdateProgress();
+      state.videoStarted = false;
+    }
+
+    function restartExperience() {
+      state.currentQuestionIndex = 0;
+      state.selectedOptionIndex = null;
+      state.isSubmitted = false;
+      state.userAnswers = [null, null, null];
+      els.videoUrlNotice.classList.remove("visible");
+      try { sessionStorage.removeItem(STORAGE_KEY); } catch (err) {}
+      resetVideoStage();
+      goToStage(1);
+    }
+
+    /**
+     * ========================================================================
+     * PREVENT ACCIDENTAL RELOADS DURING ACTIVE QUIZ
+     * ========================================================================
+     */
+    window.addEventListener("beforeunload", (event) => {
+      const quizInProgress =
+        state.currentStage === 3 &&
+        (state.selectedOptionIndex !== null || state.userAnswers.some((ans) => ans !== null));
+      if (quizInProgress) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    });
+
+    /**
+     * ========================================================================
+     * EVENT LISTENERS INITIALIZATION
+     * ========================================================================
+     */
+    els.langToggleBtn.addEventListener("click", toggleLanguage);
+    els.startCaseBtn.addEventListener("click", () => goToStage(2));
+    els.startQuestionsBtn.addEventListener("click", () => goToStage(3));
+    els.checkAnswerBtn.addEventListener("click", submitAnswer);
+    els.nextQuestionBtn.addEventListener("click", handleNextQuestion);
+    els.toVideoStageBtn.addEventListener("click", () => goToStage(5));
+    els.watchVideoBtn.addEventListener("click", handleWatchVideo);
+    els.kidneyVideo.addEventListener("ended", handleVideoEnded);
+    els.kidneyVideo.addEventListener("play", () => { vcUpdatePlayIcon(); vcScheduleHide(); });
+    els.kidneyVideo.addEventListener("pause", () => { vcUpdatePlayIcon(); vcShowControls(); });
+    els.kidneyVideo.addEventListener("timeupdate", vcUpdateProgress);
+    els.kidneyVideo.addEventListener("loadedmetadata", vcUpdateProgress);
+    els.kidneyVideo.addEventListener("click", vcTogglePlay);
+    els.kidneyVideo.addEventListener("playing", vcEnsurePlayerInView);
+    els.videoPlayerWrap.addEventListener("mousemove", () => { vcShowControls(); vcScheduleHide(); });
+    els.videoPlayerWrap.addEventListener("touchstart", () => { vcShowControls(); vcScheduleHide(); }, { passive: true });
+    els.videoControls.addEventListener("pointerdown", () => { vcShowControls(); vcScheduleHide(); });
+    els.vcPlayPause.addEventListener("click", (event) => { event.stopPropagation(); vcTogglePlay(); });
+    els.vcSeek.addEventListener("input", () => {
+      const video = els.kidneyVideo;
+      if (video && isFinite(video.duration) && video.duration > 0) {
+        video.currentTime = (els.vcSeek.value / 1000) * video.duration;
+      }
+      vcUpdateProgress();
+      vcShowControls();
+      vcScheduleHide();
+    });
+    els.vcFullscreen.addEventListener("click", (event) => { event.stopPropagation(); vcToggleFullscreen(); });
+    els.kidneyVideo.addEventListener("error", () => {
+      // Only fall back once playback was actually requested; a missing src on
+      // first load also fires "error" in some browsers and means nothing.
+      if (state.videoStarted) {
+        activateIframeFallback();
+      }
+    });
+    els.videoContinueBtn.addEventListener("click", () => goToStage(6));
+    els.videoReplayBtn.addEventListener("click", handleVideoReplay);
+    els.toFinalStageBtn.addEventListener("click", () => goToStage(6));
+    els.restartBtn.addEventListener("click", restartExperience);
+
+    // Initialize language, then restore any in-progress session so a reload
+    // or a trip back from another app lands on the same step.
+    if (!restoreProgress()) {
+      applyLanguage("en");
+    }
+  </script>
+</body>
+</html>
