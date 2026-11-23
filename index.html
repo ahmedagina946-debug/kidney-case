@@ -1108,6 +1108,29 @@
       background: #1E0F28;
     }
 
+    .video-player-wrap.yt-active {
+      width: min(100%, calc(68vh * 9 / 16));
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .video-player-wrap.yt-active iframe { width: 100%; }
+    .video-player-wrap.yt-active:fullscreen,
+    .video-player-wrap.yt-active:-webkit-full-screen {
+      width: 100%; height: 100%; background: #000;
+    }
+    .video-player-wrap.yt-active:fullscreen iframe,
+    .video-player-wrap.yt-active:-webkit-full-screen iframe {
+      width: min(100vw, calc(100vh * 9 / 16));
+      height: min(100vh, calc(100vw * 16 / 9));
+    }
+    .yt-tap-surface {
+      position: absolute; inset: 0; z-index: 2;
+      border: 0; background: transparent; cursor: pointer;
+      width: 100%; height: 100%;
+    }
+    .yt-tap-surface:focus-visible { outline: 3px solid #7FB1DC; outline-offset: -4px; }
+    .video-player-wrap.yt-loading .yt-tap-surface { display: none; }
+    .video-controls .vc-btn { min-width: 44px; min-height: 44px; }
     /* Fullscreen: let the video fill the screen, controls stay on top */
     .video-player-wrap:fullscreen {
       border-radius: 0;
@@ -2088,10 +2111,9 @@
     const VIDEO_URL = "https://drive.google.com/file/d/1qannjU7IA5aypDRwAq8Je4n3YFl3Sb56/view?usp=sharing";
     // Direct stream used by the inline <video> player (same file as VIDEO_URL).
     const VIDEO_STREAM_URL = "https://kidney-case.surge.sh/video.mp4";
-    // The Drive copy stays the backup: if the stream fails to load, the player
-    // below falls back to the Drive embed iframe automatically.
-    // Drive preview embed used as a fallback if the direct stream cannot play.
-    const VIDEO_EMBED_URL = "https://www.youtube-nocookie.com/embed/4qvF2bUGcHw?rel=0&playsinline=1&modestbranding=1&enablejsapi=1&autoplay=1";
+    // YouTube embed with supported minimal-control settings.
+    // Channel/title/Shorts branding may still be displayed by YouTube.
+    const VIDEO_EMBED_URL = "https://www.youtube-nocookie.com/embed/4qvF2bUGcHw?rel=0&playsinline=1&controls=0&iv_load_policy=3&fs=1&enablejsapi=1&autoplay=1";
 
     /**
      * ========================================================================
@@ -2429,6 +2451,10 @@
      * ========================================================================
      */
     function goToStage(stageNum) {
+      if (stageNum !== 5 && state.videoStarted) {
+        if (state.videoUsingFallback) ytCommand("pauseVideo");
+        else if (els.kidneyVideo) els.kidneyVideo.pause();
+      }
       state.currentStage = stageNum;
 
       document.querySelectorAll(".stage-panel").forEach((panel, idx) => {
@@ -2700,6 +2726,37 @@
      */
     const VC_HIDE_MS = 3000;
     let vcHideTimer = null;
+    let ytPlayer = null;
+    let ytPlaying = false;
+    let ytReady = false;
+    let ytProgressTimer = null;
+    function ytCommand(name, args = []) {
+      if (ytPlayer && ytReady && typeof ytPlayer[name] === "function") ytPlayer[name](...args);
+    }
+    function initYouTubePlayer() {
+      if (!window.YT || !YT.Player || !document.getElementById("ytFrame") || ytPlayer) return;
+      ytPlayer = new YT.Player("ytFrame", { events: {
+        onReady: () => {
+          ytReady = true;
+          ytCommand("playVideo");
+          vcShowControls();
+          ytProgressTimer = setInterval(vcUpdateProgress, 500);
+        },
+        onStateChange: (event) => {
+          ytPlaying = event.data === YT.PlayerState.PLAYING;
+          els.videoPlayerWrap.classList.toggle("yt-loading", event.data !== YT.PlayerState.PLAYING && event.data !== YT.PlayerState.PAUSED);
+          vcUpdatePlayIcon();
+          if (ytPlaying) { vcScheduleHide(); vcEnsurePlayerInView(); }
+          else vcShowControls();
+          if (event.data === YT.PlayerState.ENDED) handleVideoEnded();
+        },
+        onError: () => {
+          els.videoPlayerWrap.classList.add("yt-loading");
+          vcShowControls();
+        }
+      }});
+    }
+    window.onYouTubeIframeAPIReady = initYouTubePlayer;
 
     function vcFormatTime(seconds) {
       if (!isFinite(seconds) || seconds < 0) seconds = 0;
@@ -2717,19 +2774,29 @@
       if (!els.videoControls) return;
       if (vcHideTimer) clearTimeout(vcHideTimer);
       vcHideTimer = setTimeout(() => {
-        if (els.kidneyVideo && !els.kidneyVideo.paused && !els.kidneyVideo.ended) {
+        if (state.videoUsingFallback ? ytPlaying : (els.kidneyVideo && !els.kidneyVideo.paused && !els.kidneyVideo.ended)) {
           els.videoControls.classList.add("vc-hidden");
         }
       }, VC_HIDE_MS);
     }
 
     function vcUpdatePlayIcon() {
-      const playing = els.kidneyVideo && !els.kidneyVideo.paused && !els.kidneyVideo.ended;
+      const playing = state.videoUsingFallback ? ytPlaying : els.kidneyVideo && !els.kidneyVideo.paused && !els.kidneyVideo.ended;
       els.vcIconPlay.style.display = playing ? "none" : "";
       els.vcIconPause.style.display = playing ? "" : "none";
     }
 
     function vcUpdateProgress() {
+      if (state.videoUsingFallback) {
+        if (!ytReady || !ytPlayer) return;
+        const duration = ytPlayer.getDuration();
+        const current = ytPlayer.getCurrentTime();
+        const ratio = duration > 0 ? Math.min(1, current / duration) : 0;
+        els.vcSeek.value = Math.round(ratio * 1000);
+        els.vcSeek.style.setProperty("--vc-fill", (ratio * 100).toFixed(1) + "%");
+        els.vcTime.textContent = vcFormatTime(current) + " / " + vcFormatTime(duration);
+        return;
+      }
       const video = els.kidneyVideo;
       if (!video) return;
       if (isFinite(video.duration) && video.duration > 0) {
@@ -2745,6 +2812,11 @@
     }
 
     function vcTogglePlay() {
+      if (state.videoUsingFallback) {
+        ytCommand(ytPlaying ? "pauseVideo" : "playVideo");
+        vcShowControls(); vcScheduleHide();
+        return;
+      }
       const video = els.kidneyVideo;
       if (!video || state.videoUsingFallback) return;
       if (video.paused || video.ended) {
@@ -2825,14 +2897,30 @@
       iframe.setAttribute("allow", "autoplay; fullscreen; encrypted-media; picture-in-picture");
       iframe.setAttribute("allowfullscreen", "");
       iframe.allowFullscreen = true;
-      els.videoControls.style.display = "none";
-      els.videoPlayerWrap.insertBefore(iframe, els.videoEndOverlay);
-      // The Drive iframe offers its own fullscreen button; when it cannot fire
-      // an end event, the COMPLETE EXPERIENCE button below stays the way onward.
+      iframe.referrerPolicy = "strict-origin-when-cross-origin";
+      els.videoControls.style.display = "";
+      els.videoPlayerWrap.classList.add("yt-active", "yt-loading");
+      els.videoPlayerWrap.insertBefore(iframe, els.videoControls);
+      const tap = document.createElement("button");
+      tap.type = "button"; tap.id = "ytTapSurface"; tap.className = "yt-tap-surface";
+      tap.setAttribute("aria-label", "Show video controls / إظهار أدوات الفيديو");
+      tap.addEventListener("click", () => { vcShowControls(); vcScheduleHide(); });
+      els.videoPlayerWrap.insertBefore(tap, els.videoControls);
+      if (window.YT && YT.Player) initYouTubePlayer();
+      else if (!document.getElementById("youtubeApiScript")) {
+        const api = document.createElement("script");
+        api.id = "youtubeApiScript"; api.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(api);
+      }
+      vcShowControls();
+      // YouTube owns its branding. These settings minimize controls, not channel/title UI.
+      // The page controls provide play, seek and wrapper fullscreen via the official API.
     }
 
     window.addEventListener("message", (e) => {
-      if (!/youtube(-nocookie)?\.com$/.test(new URL(e.origin).hostname)) return;
+      if (e.origin !== "https://www.youtube.com" && e.origin !== "https://www.youtube-nocookie.com") return;
+      const frame = document.getElementById("ytFrame");
+      if (!frame || e.source !== frame.contentWindow) return;
       let d = e.data;
       try { if (typeof d === "string") d = JSON.parse(d); } catch (err) { return; }
       if (!d) return;
@@ -2848,7 +2936,11 @@
     function handleVideoReplay() {
       els.videoEndOverlay.classList.remove("visible");
       const yt = document.getElementById("ytFrame");
-      if (yt) { yt.src = yt.src; return; }
+      if (yt) {
+        if (ytReady) { ytCommand("seekTo", [0, true]); ytCommand("playVideo"); }
+        else yt.src = yt.src;
+        return;
+      }
       if (!state.videoUsingFallback && els.kidneyVideo) {
         els.kidneyVideo.currentTime = 0;
         const playPromise = els.kidneyVideo.play();
@@ -2861,6 +2953,13 @@
     function resetVideoStage() {
       els.videoEndOverlay.classList.remove("visible");
       els.videoPlayerWrap.classList.remove("visible");
+      if (ytProgressTimer) { clearInterval(ytProgressTimer); ytProgressTimer = null; }
+      if (ytPlayer && typeof ytPlayer.destroy === "function") ytPlayer.destroy();
+      ytPlayer = null; ytReady = false; ytPlaying = false;
+      state.videoUsingFallback = false;
+      const tapSurface = document.getElementById("ytTapSurface");
+      if (tapSurface) tapSurface.remove();
+      els.videoPlayerWrap.classList.remove("yt-active", "yt-loading");
       const ytf = document.getElementById("ytFrame");
       if (ytf) { ytf.remove(); state.videoUsingFallback = false; }
       els.videoPoster.style.display = "";
@@ -2926,7 +3025,9 @@
     els.vcPlayPause.addEventListener("click", (event) => { event.stopPropagation(); vcTogglePlay(); });
     els.vcSeek.addEventListener("input", () => {
       const video = els.kidneyVideo;
-      if (video && isFinite(video.duration) && video.duration > 0) {
+      if (state.videoUsingFallback && ytReady) {
+        ytCommand("seekTo", [(els.vcSeek.value / 1000) * ytPlayer.getDuration(), true]);
+      } else if (video && isFinite(video.duration) && video.duration > 0) {
         video.currentTime = (els.vcSeek.value / 1000) * video.duration;
       }
       vcUpdateProgress();
