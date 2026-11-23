@@ -1101,9 +1101,9 @@
 
     .video-player-wrap iframe {
       display: block;
-      width: 100%;
+      width: min(100%, calc(68vh * 9 / 16));
+      margin: 0 auto;
       aspect-ratio: 9 / 16;
-      max-height: 68vh;
       border: 0;
       background: #1E0F28;
     }
@@ -2072,6 +2072,7 @@
 
   <footer class="app-footer">
     <span data-i18n="footerText">KIDNEY CASE • Interactive Medical Awareness Experience</span>
+    <div id="madeByCredit" style="display:none;margin-top:6px;font-weight:600;" dir="ltr">Made with <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" style="vertical-align:-2px;display:inline-block;" aria-label="love"><path fill="#e0245e" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> by Ahmed Ehab Agina</div>
   </footer>
 
   <!-- ========================================================================
@@ -2090,7 +2091,7 @@
     // The Drive copy stays the backup: if the stream fails to load, the player
     // below falls back to the Drive embed iframe automatically.
     // Drive preview embed used as a fallback if the direct stream cannot play.
-    const VIDEO_EMBED_URL = "https://drive.google.com/file/d/1qannjU7IA5aypDRwAq8Je4n3YFl3Sb56/preview";
+    const VIDEO_EMBED_URL = "https://www.youtube-nocookie.com/embed/4qvF2bUGcHw?rel=0&playsinline=1&modestbranding=1&enablejsapi=1&autoplay=1";
 
     /**
      * ========================================================================
@@ -2802,17 +2803,9 @@
       els.watchVideoBtn.style.display = "none";
       els.videoPlayerWrap.classList.add("visible");
 
-      if (!state.videoUsingFallback) {
-        const video = els.kidneyVideo;
-        if (!state.videoStarted) {
-          video.src = VIDEO_STREAM_URL;
-        }
-        state.videoStarted = true;
-        const playPromise = video.play();
-        if (playPromise && typeof playPromise.catch === "function") {
-          playPromise.catch(() => { /* the visitor can press play on the player itself */ });
-        }
-      }
+      // YouTube embed plays inside the page (created on the visitor's tap, so autoplay is allowed).
+      state.videoStarted = true;
+      activateIframeFallback();
       saveProgress();
     }
 
@@ -2823,7 +2816,11 @@
         els.kidneyVideo.parentNode.removeChild(els.kidneyVideo);
       }
       const iframe = document.createElement("iframe");
-      iframe.src = VIDEO_EMBED_URL;
+      iframe.src = VIDEO_EMBED_URL + "&origin=" + encodeURIComponent(location.origin);
+      iframe.id = "ytFrame";
+      iframe.addEventListener("load", () => {
+        try { iframe.contentWindow.postMessage(JSON.stringify({ event: "listening", id: 1 }), "*"); } catch (e) {}
+      });
       iframe.title = "Kidney awareness video";
       iframe.setAttribute("allow", "autoplay; fullscreen; encrypted-media; picture-in-picture");
       iframe.setAttribute("allowfullscreen", "");
@@ -2834,12 +2831,24 @@
       // an end event, the COMPLETE EXPERIENCE button below stays the way onward.
     }
 
+    window.addEventListener("message", (e) => {
+      if (!/youtube(-nocookie)?\.com$/.test(new URL(e.origin).hostname)) return;
+      let d = e.data;
+      try { if (typeof d === "string") d = JSON.parse(d); } catch (err) { return; }
+      if (!d) return;
+      if ((d.event === "onStateChange" && d.info === 0) || (d.event === "infoDelivery" && d.info && d.info.playerState === 0)) {
+        handleVideoEnded();
+      }
+    });
+
     function handleVideoEnded() {
       els.videoEndOverlay.classList.add("visible");
     }
 
     function handleVideoReplay() {
       els.videoEndOverlay.classList.remove("visible");
+      const yt = document.getElementById("ytFrame");
+      if (yt) { yt.src = yt.src; return; }
       if (!state.videoUsingFallback && els.kidneyVideo) {
         els.kidneyVideo.currentTime = 0;
         const playPromise = els.kidneyVideo.play();
@@ -2852,6 +2861,8 @@
     function resetVideoStage() {
       els.videoEndOverlay.classList.remove("visible");
       els.videoPlayerWrap.classList.remove("visible");
+      const ytf = document.getElementById("ytFrame");
+      if (ytf) { ytf.remove(); state.videoUsingFallback = false; }
       els.videoPoster.style.display = "";
       els.watchVideoBtn.style.display = "";
       if (!state.videoUsingFallback && els.kidneyVideo) {
@@ -2941,5 +2952,10 @@
       applyLanguage("en");
     }
   </script>
+<script>
+(function(){var c=document.getElementById("madeByCredit"),p=document.getElementById("stage-6");
+function u(){c.style.display=p.classList.contains("active")?"block":"none";}
+new MutationObserver(u).observe(p,{attributes:true,attributeFilter:["class"]});u();})();
+</script>
 </body>
 </html>
