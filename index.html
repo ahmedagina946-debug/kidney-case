@@ -8,7 +8,7 @@
   <title>KIDNEY CASE — An Interactive Medical Awareness Experience</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     /* ==========================================================================
        1. DESIGN TOKENS & THEME VARIABLES
@@ -1294,6 +1294,15 @@
       margin: 0 auto 1.5rem;
     }
 
+
+    .designers-block{margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--color-border);text-align:center;}
+    .designers-title{font-size:1rem;font-weight:700;color:#5F2A73;margin:0 0 .75rem;}
+    .designers-grid{display:grid;gap:.6rem;}
+    .designer-card{display:flex;align-items:center;gap:.75rem;text-align:left;background:#EDF4FB;border:1px solid #D6E4F1;border-radius:12px;padding:.65rem .8rem;}
+    .designer-avatar{flex:0 0 38px;height:38px;border-radius:50%;background:#5F2A73;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;}
+    .designer-name{font-weight:700;color:#2A2036;font-size:.95rem;}
+    .designer-detail{font-size:.8rem;color:#4a4458;word-break:break-all;}
+    .designer-detail a{color:#1B5A96;text-decoration:none;}
     .references-section {
       margin-top: 2rem;
       padding-top: 1.5rem;
@@ -1343,6 +1352,8 @@
       word-break: break-word;
     }
 
+    .ref-topic{font-weight:700;color:#2A2036;margin-bottom:.4rem;font-size:.9rem;}
+    .references-list .ref-link{display:flex;margin-top:.3rem;font-weight:600;font-size:.82rem;text-align:left;}
     .references-list a:hover {
       text-decoration: underline;
     }
@@ -1562,9 +1573,125 @@
 
     .btn-secondary { background: #DCEAF6; border-color: #AFD0ED; color: #5F2A73; }
     .btn-secondary:hover { background: #AFD0ED; border-color: #AFD0ED; color: #3E1A4F; }
+
+    /* ==========================================================================
+       15. GLASS THEME — deep purple page, glass cards, light-blue accent
+       ========================================================================== */
+    :root {
+      --font-en: "Inter", "Noto Sans Arabic", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-ar: "Noto Sans Arabic", "Inter", "Segoe UI", Tahoma, sans-serif;
+      --g-accent: #AFD0ED;
+      --g-accent-2: #7FB1DC;
+      --g-text: #F2EEF8;
+      --g-muted: #C9BFD8;
+      --g-glass: rgba(31, 12, 46, 0.78);
+      --g-glass-soft: rgba(175, 208, 237, 0.09);
+      --g-border: rgba(175, 208, 237, 0.28);
+      --g-glow: 0 8px 32px rgba(127, 177, 220, 0.16);
+      --color-text-main: #F2EEF8;
+      --color-text-muted: #C9BFD8;
+      --color-border: rgba(175, 208, 237, 0.28);
+    }
+    body, html[dir="rtl"] body {
+      background: linear-gradient(180deg, #1F0C2E 0%, #3E1A4F 28%, #4A2563 52%, #3E1A4F 76%, #1F0C2E 100%);
+      background-attachment: fixed;
+      color: var(--g-text);
+    }
+    html[dir="rtl"] body { font-family: var(--font-ar); }
+    #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    #particles i { position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%;
+      background: rgba(175, 208, 237, 0.5); animation: gfloat linear infinite; }
+    @keyframes gfloat { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: .8; } 100% { transform: translateY(-105vh); opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) { #particles { display: none; } }
+    .app-header, main, .app-footer { position: relative; z-index: 1; }
+
+    .app-header { background: linear-gradient(135deg, #1F0C2E 0%, #3E1A4F 100%); border-bottom: none;
+      box-shadow: 0 4px 20px rgba(127, 177, 220, 0.22); }
+    .brand-icon { background: linear-gradient(135deg, #AFD0ED 0%, #7FB1DC 100%); color: #1F0C2E;
+      box-shadow: 0 4px 15px rgba(127, 177, 220, 0.35); border-radius: 50%; }
+    .brand-title { color: #fff; }
+    .brand-sub { color: var(--g-muted); }
+    .stage-pill, .lang-toggle { background: var(--g-glass-soft); border: 1px solid var(--g-border); color: var(--g-accent); }
+    .lang-toggle:hover { background: rgba(175, 208, 237, 0.2); color: #fff; border-color: var(--g-accent); }
+    .global-progress-track { background: rgba(175, 208, 237, 0.15); }
+    .global-progress-fill { background: linear-gradient(90deg, #7FB1DC, #AFD0ED); }
+
+    .card { background: var(--g-glass); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+      border: 1px solid var(--g-border); border-radius: 20px; box-shadow: var(--g-glow); color: var(--g-text); }
+    .card-top-accent { background: linear-gradient(90deg, #7FB1DC, #AFD0ED); }
+    .hero-title, .section-title, .final-headline, .question-text, .patient-name, .takeaways-title,
+    .references-title, .comparison-section-title, .designers-title, .score-num { color: var(--g-accent); }
+    .section-title { position: relative; }
+    .section-title::after { content: ""; display: block; width: 60px; height: 4px; margin-top: 8px; border-radius: 2px;
+      background: linear-gradient(90deg, #7FB1DC, #AFD0ED); }
+    .hero-title::after, .final-headline::after { content: none; }
+    .hero-subtitle { color: var(--g-accent-2); }
+    .final-message, .quiz-counter, .performance-msg, .score-denom, .video-note, .vital-label,
+    .designer-detail, .brand-sub, .takeaways-list, .compare-list { color: var(--g-muted); }
+    .campaign-tag, .mascot-badge, .patient-age-tag, .score-badge {
+      background: rgba(175, 208, 237, 0.14); border-color: var(--g-border); color: var(--g-accent); }
+
+    .hero-intro, .patient-card-box, .meta-chip, .vital-item, .mission-box, .reminder-box, .score-hero,
+    .takeaways-box, .disclaimer-box, .references-list li, .designer-card, .compare-card, .challenge-callout,
+    .video-alert, .option-btn, .core-message-box {
+      background: var(--g-glass-soft); border: 1px solid var(--g-border); color: var(--g-text); box-shadow: none; }
+    .hero-intro p, .hero-intro, .mission-box, .reminder-box, .core-message-box, .challenge-text { color: var(--g-text); }
+    .reminder-box { border-inline-start: 4px solid var(--g-accent); }
+    .vital-value, .designer-name, .ref-topic, .compare-card h4, .compare-card.affected h4, .compare-card.healthy h4 { color: #fff; }
+    .vital-item:hover, .meta-chip:hover, .references-list li:hover { background: rgba(175, 208, 237, 0.15); border-color: var(--g-accent); }
+    .meta-chip, .meta-chip span { color: var(--g-text); }
+    .disclaimer-box { color: var(--g-muted); }
+    .disclaimer-box strong { color: var(--g-accent); }
+    .patient-avatar, .designer-avatar { background: linear-gradient(135deg, #AFD0ED, #7FB1DC); color: #1F0C2E; }
+    .vital-value.highlight-teal { color: var(--g-accent); }
+    .vital-value.highlight-warn { color: #F5B97A; }
+
+    .btn-primary, .btn-video { background: linear-gradient(135deg, #AFD0ED 0%, #7FB1DC 100%); color: #1F0C2E;
+      border: none; border-radius: 12px; font-weight: 700; box-shadow: 0 6px 20px rgba(127, 177, 220, 0.3); }
+    .btn-primary:hover:not(:disabled), .btn-video:hover { background: linear-gradient(135deg, #C4DDF2 0%, #9CC3E8 100%);
+      color: #1F0C2E; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(127, 177, 220, 0.4); }
+    .btn-primary:disabled { background: rgba(175, 208, 237, 0.2); color: rgba(242, 238, 248, 0.5); box-shadow: none; }
+    .btn-secondary { background: var(--g-glass-soft); border: 1.5px solid var(--g-accent); color: var(--g-accent); border-radius: 12px; }
+    .btn-secondary:hover { background: rgba(175, 208, 237, 0.2); color: #fff; border-color: var(--g-accent); }
+
+    .option-btn { color: var(--g-text); }
+    .option-btn:hover:not(:disabled) { background: rgba(175, 208, 237, 0.18); border-color: var(--g-accent); }
+    .option-btn.selected { background: rgba(175, 208, 237, 0.22); border-color: var(--g-accent); }
+    .option-letter { background: rgba(175, 208, 237, 0.15); border-color: var(--g-border); color: var(--g-accent); }
+    .option-btn.selected .option-letter { background: var(--g-accent); border-color: var(--g-accent); color: #1F0C2E; }
+    .option-btn.correct-reveal { background: rgba(60, 190, 130, 0.16); border-color: #4FCB95; }
+    .option-btn.correct-reveal .option-letter { background: #4FCB95; border-color: #4FCB95; color: #0F2A1E; }
+    .option-btn.incorrect-reveal { background: rgba(240, 110, 100, 0.16); border-color: #F07A70; }
+    .option-btn.incorrect-reveal .option-letter { background: #F07A70; border-color: #F07A70; color: #3A1210; }
+    .feedback-panel.is-correct { background: rgba(60, 190, 130, 0.12); border-color: #4FCB95; color: var(--g-text); }
+    .feedback-panel.is-incorrect { background: rgba(240, 110, 100, 0.12); border-color: #F07A70; color: var(--g-text); }
+    .feedback-correct-answer, .feedback-explanation { color: var(--g-text); }
+    .step-dot { background: rgba(175, 208, 237, 0.2); }
+    .step-dot.completed { background: var(--g-accent-2); }
+    .step-dot.active { background: var(--g-accent); }
+
+    .references-list a, .designer-detail a { color: var(--g-accent); }
+    .references-list a:hover, .designer-detail a:hover { color: #fff; }
+    .references-section, .designers-block { border-top-color: var(--g-border); }
+    .references-title svg { color: var(--g-accent); }
+
+    .app-footer { color: var(--g-muted); background: transparent; border-top: none; }
+    .app-footer * { color: inherit; }
+    .section-eyebrow { background: none; border: none; color: var(--g-accent-2); }
+    .compare-card.healthy { background: rgba(60, 190, 130, 0.12); border-color: #4FCB95; }
+    .compare-card.affected { background: rgba(245, 185, 122, 0.12); border-color: #F5B97A; }
+    .compare-card.healthy h4 { color: #8FE3BC; }
+    .compare-card.affected h4 { color: #F7C998; }
+    .compare-list { color: var(--g-text); }
+    .option-btn.correct-reveal, .option-btn.correct-reveal span, .option-btn.incorrect-reveal, .option-btn.incorrect-reveal span:not(.option-letter) { color: #fff; }
+    .feedback-correct-answer { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid var(--g-border); }
+    .feedback-panel.is-correct .feedback-header { color: #8FE3BC; }
+    .feedback-panel.is-incorrect .feedback-header { color: #F7A59D; }
+    .final-headline, .hero-title { text-shadow: 0 2px 18px rgba(127, 177, 220, 0.25); }
   </style>
 </head>
 <body>
+  <div id="particles" aria-hidden="true"></div>
 
   <!-- ========================================================================
        STICKY HEADER & LANGUAGE SWITCHER
@@ -1683,6 +1810,15 @@
             <polyline points="12 5 19 12 12 19"></polyline>
           </svg>
         </button>
+
+        <button type="button" class="btn btn-secondary" id="openRefsBtn" style="margin-top:12px;">
+          <span data-i18n="openRefsBtn">REFERENCES</span>
+        </button>
+
+        <div class="designers-block" dir="ltr">
+          <h3 class="designers-title" data-i18n="designedBy">Design team</h3>
+          <div class="designers-grid" id="designersGrid"></div>
+        </div>
       </div>
     </section>
 
@@ -2046,7 +2182,23 @@
 
         <!-- Scientific References -->
         <div class="references-section">
-          <h3 class="references-title">
+          <div class="disclaimer-box" role="contentinfo">
+            <strong data-i18n="disclaimerLabel">Medical Disclaimer:</strong>
+            <span data-i18n="disclaimerText">
+              This interactive experience presents a fictional patient scenario created solely for medical education and public health awareness at a scientific event. It does not constitute medical advice, diagnosis, or treatment. Clinical decisions and laboratory results must always be interpreted by a qualified healthcare professional in the context of an individual patient's health.
+            </span>
+          </div>
+        </div>
+      
+</div>
+    </section>
+
+    <!-- STAGE 7: REFERENCES (opened from the homepage) -->
+    <section class="stage-panel" id="stage-7" aria-labelledby="referencesPageTitle">
+      <div class="card">
+        <div class="card-top-accent"></div>
+        <div class="references-section" style="border-top:none;margin-top:0;padding-top:0;">
+          <h3 class="references-title" id="referencesPageTitle">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
@@ -2056,37 +2208,48 @@
 
           <ul class="references-list" id="referencesList">
             <li>
-              <a href="https://archive.cdc.gov/www_cdc_gov/csels/dsepd/ss1978/lesson1/section1.html" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic1">1. What is Epidemiology?</span><span aria-hidden="true"> ↗</span></a>
+              <div class="ref-topic" data-i18n="refTopic1"></div>
+              <a class="ref-link" href="https://pubmed.ncbi.nlm.nih.gov/29366422/" target="_blank" rel="noopener noreferrer" dir="ltr"><span>Khalil et al. 2019, Curr Diabetes Rev: Alexandria study (PubMed)</span><span aria-hidden="true"> ↗</span></a>
+              <a class="ref-link" href="https://www.benthamscience.com/article/88195" target="_blank" rel="noopener noreferrer" dir="ltr"><span>Same paper on Bentham Science</span><span aria-hidden="true"> ↗</span></a>
             </li>
             <li>
-              <a href="https://doi.org/10.1002/(SICI)1096-9136(1998120)15:12%3C1045::AID-DIA696%3E3.0.CO;2-L" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic2">2. Risk Factors of Diabetic Kidney Disease</span><span aria-hidden="true"> ↗</span></a>
+              <div class="ref-topic" data-i18n="refTopic2"></div>
+              <a class="ref-link" href="https://esnt-online.com/wp-content/uploads/2024/01/ERDS-2020.pdf" target="_blank" rel="noopener noreferrer" dir="ltr"><span>Egyptian Renal Data System (ERDS) 2020 annual report</span><span aria-hidden="true"> ↗</span></a>
+              <a class="ref-link" href="https://doi.org/10.4314/ajnt.v3i3.63145" target="_blank" rel="noopener noreferrer" dir="ltr"><span>Soliman et al. 2011: 5-year prospective study, 512 patients</span><span aria-hidden="true"> ↗</span></a>
             </li>
             <li>
-              <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8061574/" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic3">3. Causes of Diabetic Kidney Disease</span><span aria-hidden="true"> ↗</span></a>
+              <div class="ref-topic" data-i18n="refTopic3"></div>
+              <a class="ref-link" href="https://www.ncbi.nlm.nih.gov/books/NBK534200/" target="_blank" rel="noopener noreferrer" dir="ltr"><span>StatPearls: Diabetic Nephropathy</span><span aria-hidden="true"> ↗</span></a>
             </li>
             <li>
-              <a href="https://pubmed.ncbi.nlm.nih.gov/16335654/" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic4">4. Mortality and Morbidity in Diabetic Kidney Disease</span><span aria-hidden="true"> ↗</span></a>
+              <div class="ref-topic" data-i18n="refTopic4"></div>
+              <a class="ref-link" href="https://doi.org/10.4103/1110-9165.179214" target="_blank" rel="noopener noreferrer" dir="ltr"><span>Nohman et al. 2016: El Mahalla General Hospital</span><span aria-hidden="true"> ↗</span></a>
+              <a class="ref-link" href="https://www.academia.edu/117524272/Diabetes_mellitus_in_Egypt_glycaemic_control_and_microvascular_and_neuropathic_complications" target="_blank" rel="noopener noreferrer" dir="ltr"><span>Herman et al. 1998: Diabetes mellitus in Egypt</span><span aria-hidden="true"> ↗</span></a>
             </li>
             <li>
-              <a href="https://esnt-online.com/wp-content/uploads/2024/01/ERDS-2020.pdf" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic5">5. Incidence of Diabetic Kidney Disease, with Focus on Egypt</span><span aria-hidden="true"> ↗</span></a>
+              <div class="ref-topic" data-i18n="refTopic5"></div>
+              <a class="ref-link" href="https://applications.emro.who.int/emhj/1004_5/10_4-5_2004_620_626.pdf" target="_blank" rel="noopener noreferrer" dir="ltr"><span>Afifi et al. 2004, East Mediterr Health J</span><span aria-hidden="true"> ↗</span></a>
             </li>
             <li>
-              <a href="https://pubmed.ncbi.nlm.nih.gov/29366422/" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic6">6. Prevalence of Diabetic Kidney Disease</span><span aria-hidden="true"> ↗</span></a>
+              <div class="ref-topic" data-i18n="refTopic6"></div>
+              <a class="ref-link" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10469408/" target="_blank" rel="noopener noreferrer" dir="ltr"><span>Socioeconomic inequalities in diabetes prevalence, Egypt 2008-2015 (PMC)</span><span aria-hidden="true"> ↗</span></a>
             </li>
             <li>
-              <a href="https://www.edaegypt.gov.eg/media/ehvdor31/final-version-eda-diabetes-guide-to-good-pharmacy.pdf" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic7">7. Prevention and Treatment of Diabetic Kidney Disease</span><span aria-hidden="true"> ↗</span></a>
+              <div class="ref-topic" data-i18n="refTopic7"></div>
+              <a class="ref-link" href="https://www.edaegypt.gov.eg/media/ehvdor31/final-version-eda-diabetes-guide-to-good-pharmacy.pdf" target="_blank" rel="noopener noreferrer" dir="ltr"><span>EDA Diabetes Guide to Good Pharmacy Practice</span><span aria-hidden="true"> ↗</span></a>
+              <a class="ref-link" href="https://doi.org/10.4103/1110-9165.179214" target="_blank" rel="noopener noreferrer" dir="ltr"><span>Nohman et al. 2016: El Mahalla General Hospital</span><span aria-hidden="true"> ↗</span></a>
             </li>
             <li>
-              <a href="https://doi.org/10.4103/1110-9165.179214" target="_blank" rel="noopener noreferrer"><span data-i18n="refTopic8">8. Distribution of Diabetic Kidney Disease by Age, Sex and Region</span><span aria-hidden="true"> ↗</span></a>
+              <div class="ref-topic" data-i18n="refTopic8"></div>
+              <a class="ref-link" href="https://www.edaegypt.gov.eg/media/ehvdor31/final-version-eda-diabetes-guide-to-good-pharmacy.pdf" target="_blank" rel="noopener noreferrer" dir="ltr"><span>EDA Diabetes Guide to Good Pharmacy Practice (page 85)</span><span aria-hidden="true"> ↗</span></a>
+              <a class="ref-link" href="https://doi.org/10.2337/dc23-S011" target="_blank" rel="noopener noreferrer" dir="ltr"><span>ElSayed et al. 2023: ADA Standards of Care, Section 11</span><span aria-hidden="true"> ↗</span></a>
+              <a class="ref-link" href="https://doi.org/10.1016/j.kint.2022.06.008" target="_blank" rel="noopener noreferrer" dir="ltr"><span>KDIGO 2022 Diabetes in CKD guideline</span><span aria-hidden="true"> ↗</span></a>
             </li>
           </ul>
 
-          <div class="disclaimer-box" role="contentinfo">
-            <strong data-i18n="disclaimerLabel">Medical Disclaimer:</strong>
-            <span data-i18n="disclaimerText">
-              This interactive experience presents a fictional patient scenario created solely for medical education and public health awareness at a scientific event. It does not constitute medical advice, diagnosis, or treatment. Clinical decisions and laboratory results must always be interpreted by a qualified healthcare professional in the context of an individual patient's health.
-            </span>
-          </div>
+          <button type="button" class="btn btn-primary" id="refsBackBtn" style="margin-top:18px;">
+            <span data-i18n="refsBackBtn">BACK TO HOME</span>
+          </button>
         </div>
       </div>
     </section>
@@ -2197,15 +2360,18 @@
         finalHeadline: "KNOW THE RISKS. DETECT EARLY. PROTECT YOUR KIDNEYS.",
         finalAwarenessMsg: "Thank you for completing this interactive medical awareness experience on the epidemiology and early detection of diabetic nephropathy in Egypt. Timely UACR and eGFR screening empowers early intervention before symptoms appear.",
         restartBtn: "RESTART EXPERIENCE",
+        openRefsBtn: "REFERENCES",
+        refsBackBtn: "BACK TO HOME",
+        designedBy: "Design team",
         referencesHeading: "Scientific References",
-        refTopic1: "1. What is Epidemiology?",
-        refTopic2: "2. Risk Factors of Diabetic Kidney Disease",
-        refTopic3: "3. Causes of Diabetic Kidney Disease",
-        refTopic4: "4. Mortality and Morbidity in Diabetic Kidney Disease",
-        refTopic5: "5. Incidence of Diabetic Kidney Disease, with Focus on Egypt",
-        refTopic6: "6. Prevalence of Diabetic Kidney Disease",
-        refTopic7: "7. Prevention and Treatment of Diabetic Kidney Disease",
-        refTopic8: "8. Distribution of Diabetic Kidney Disease by Age, Sex and Region",
+        refTopic1: "1. Prevalence",
+        refTopic2: "2. Incidence",
+        refTopic3: "3. Causes",
+        refTopic4: "4. Risk Factors",
+        refTopic5: "5. Mortality and Morbidity",
+        refTopic6: "6. Age, Sex and Region",
+        refTopic7: "7. Prevention",
+        refTopic8: "8. Treatment",
         disclaimerLabel: "Medical Disclaimer:",
         disclaimerText: "This interactive experience presents a fictional patient case designed solely for medical education and awareness at a scientific event. It does not provide medical advice, diagnosis, or treatment. Clinical decisions and laboratory tests must always be interpreted by a qualified healthcare professional.",
         footerText: "KIDNEY CASE • Interactive Medical Awareness Experience"
@@ -2286,15 +2452,18 @@
         finalHeadline: "اعرف المخاطر. اكتشف مبكراً. احمِ كليتيك.",
         finalAwarenessMsg: "شكراً لمشاركتك في هذه التجربة الطبية التفاعلية حول وبائيات اعتلال الكُلى السكري وأهمية الكشف المبكر في مصر. المعرفة والفحص الدوري عبر UACR و eGFR يساعدان في حماية الكُلى قبل ظهور الأعراض.",
         restartBtn: "إعادة التجربة",
+        openRefsBtn: "المراجع",
+        refsBackBtn: "العودة للرئيسية",
+        designedBy: "فريق التصميم",
         referencesHeading: "المراجع العلمية",
-        refTopic1: "١. ما هو علم الوبائيات؟",
-        refTopic2: "٢. عوامل خطر الإصابة باعتلال الكُلى السكري",
-        refTopic3: "٣. أسباب اعتلال الكُلى السكري وآليات حدوثه",
-        refTopic4: "٤. الوفيات والمضاعفات في اعتلال الكُلى السكري",
-        refTopic5: "٥. معدل حدوث اعتلال الكُلى السكري، مع التركيز على مصر",
-        refTopic6: "٦. معدل انتشار اعتلال الكُلى السكري",
-        refTopic7: "٧. الوقاية من اعتلال الكُلى السكري وعلاجه",
-        refTopic8: "٨. توزيع اعتلال الكُلى السكري حسب العمر والجنس والمنطقة",
+        refTopic1: "١. معدل الانتشار",
+        refTopic2: "٢. معدل الحدوث",
+        refTopic3: "٣. الأسباب",
+        refTopic4: "٤. عوامل الخطر",
+        refTopic5: "٥. الوفيات والمضاعفات",
+        refTopic6: "٦. العمر والجنس والمنطقة",
+        refTopic7: "٧. الوقاية",
+        refTopic8: "٨. العلاج",
         disclaimerLabel: "إخلاء مسؤولية طبي:",
         disclaimerText: "تقدم هذه التجربة التفاعلية حالة مريض افتراضية أُعدّت لأغراض التعليم الطبي والتوعية الصحية خلال فعالية علمية فقط، ولا تُعد استشارة طبية أو تشخيصاً أو علاجاً. يجب دائماً تفسير الفحوصات المخبرية واتخاذ القرارات السريرية بواسطة طبيب مختص.",
         footerText: "حالة الكُلى • تجربة توعية طبية تفاعلية"
@@ -2442,7 +2611,9 @@
       videoReplayBtn: document.getElementById("videoReplayBtn"),
       toFinalStageBtn: document.getElementById("toFinalStageBtn"),
 
-      restartBtn: document.getElementById("restartBtn")
+      restartBtn: document.getElementById("restartBtn"),
+      openRefsBtn: document.getElementById("openRefsBtn"),
+      refsBackBtn: document.getElementById("refsBackBtn")
     };
 
     /**
@@ -2462,7 +2633,7 @@
       });
 
       // Update header progress
-      const pct = (stageNum / 6) * 100;
+      const pct = (Math.min(stageNum, 6) / 6) * 100;
       els.globalProgressFill.style.width = `${pct}%`;
       els.globalProgressBar.setAttribute("aria-valuenow", String(stageNum));
       updateStageIndicatorText();
@@ -2478,6 +2649,8 @@
     }
 
     function updateStageIndicatorText() {
+      els.stageIndicator.style.display = state.currentStage === 7 ? "none" : "";
+      if (state.currentStage === 7) return;
       if (state.lang === "ar") {
         const arNums = ["١", "٢", "٣", "٤", "٥", "٦"];
         els.stageIndicator.textContent = `${arNums[state.currentStage - 1]} / ٦`;
@@ -2715,7 +2888,7 @@
       state.userAnswers = Array.isArray(saved.ans) && saved.ans.length === 3 ? saved.ans : [null, null, null];
 
       applyLanguage(saved.lang === "ar" ? "ar" : "en");
-      goToStage(Math.min(6, Math.max(1, saved.stage)));
+      goToStage(Math.min(7, Math.max(1, saved.stage)));
       return true;
     }
 
@@ -3046,6 +3219,38 @@
     els.videoReplayBtn.addEventListener("click", handleVideoReplay);
     els.toFinalStageBtn.addEventListener("click", () => goToStage(6));
     els.restartBtn.addEventListener("click", restartExperience);
+    els.openRefsBtn.addEventListener("click", () => goToStage(7));
+    els.refsBackBtn.addEventListener("click", () => goToStage(1));
+
+
+    const SHOW_DETAILS = true; // set to false to show names only
+    const DESIGNERS = [
+      { name: "Abdelrahman Abdelnasser Abdelsamie", id: "25010519", email: "abdelrhman1as@gmail.com" },
+      { name: "Ahmed Ehab Agina", id: "25010121", email: "ahmedagina@std.mansnu.edu.eg" },
+      { name: "Maha Hossam Ramadan", id: "25010402", email: "mahahossam@std.mansnu.edu.eg" },
+      { name: "Menna Mahmoud Mohamed", id: "25010157", email: "mennaelshiref@std.mansnu.edu.eg" }
+    ];
+    document.getElementById("designersGrid").innerHTML = DESIGNERS.map((m) =>
+      '<div class="designer-card"><div class="designer-avatar">' + m.name.charAt(0) + '</div><div>' +
+      '<div class="designer-name">' + m.name + '</div>' +
+      (SHOW_DETAILS ?
+        '<div class="designer-detail">ID: ' + m.id + '</div>' +
+        '<div class="designer-detail"><a href="mailto:' + m.email + '">' + m.email + '</a></div>' : '') +
+      '</div></div>'
+    ).join("");
+
+
+    (function () {
+      var c = document.getElementById("particles");
+      for (var i = 0; i < 26; i++) {
+        var p = document.createElement("i");
+        p.style.left = (Math.random() * 100) + "%";
+        p.style.animationDuration = (9 + Math.random() * 12) + "s";
+        p.style.animationDelay = (-Math.random() * 18) + "s";
+        p.style.opacity = "0";
+        c.appendChild(p);
+      }
+    })();
 
     // Initialize language, then restore any in-progress session so a reload
     // or a trip back from another app lands on the same step.
@@ -3055,7 +3260,7 @@
   </script>
 <script>
 (function(){var c=document.getElementById("madeByCredit"),p=document.getElementById("stage-6");
-function u(){c.style.display=p.classList.contains("active")?"block":"none";}
+function u(){var on=p.classList.contains("active")?"block":"none";c.style.display=on;}
 new MutationObserver(u).observe(p,{attributes:true,attributeFilter:["class"]});u();})();
 </script>
 </body>
