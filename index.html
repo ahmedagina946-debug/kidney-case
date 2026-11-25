@@ -1688,7 +1688,11 @@
     .feedback-panel.is-correct .feedback-header { color: #8FE3BC; }
     .feedback-panel.is-incorrect .feedback-header { color: #F7A59D; }
     .final-headline, .hero-title { text-shadow: 0 2px 18px rgba(127, 177, 220, 0.25); }
-  </style>
+  
+    /* Supervisor line (homepage) */
+    .supervisor-line{margin:0 0 1.1rem;text-align:center;font-size:1rem;font-weight:600;color:rgba(255,255,255,.85);}
+    .supervisor-line .supervisor-name{color:var(--g-accent);font-weight:800;font-size:1.2rem;}
+</style>
 </head>
 <body>
   <div id="particles" aria-hidden="true"></div>
@@ -1816,6 +1820,7 @@
         </button>
 
         <div class="designers-block" dir="ltr">
+          <p class="supervisor-line" dir="auto"><span data-i18n="supervisorLabel">Supervisor</span>: <span dir="ltr" class="supervisor-name">Dr. Hanan Abd Elgawad</span></p>
           <h3 class="designers-title" data-i18n="designedBy">Design team</h3>
           <div class="designers-grid" id="designersGrid"></div>
         </div>
@@ -2363,6 +2368,7 @@
         openRefsBtn: "REFERENCES",
         refsBackBtn: "BACK TO HOME",
         designedBy: "Design team",
+        supervisorLabel: "Supervisor",
         referencesHeading: "Scientific References",
         refTopic1: "1. Prevalence",
         refTopic2: "2. Incidence",
@@ -2455,6 +2461,7 @@
         openRefsBtn: "المراجع",
         refsBackBtn: "العودة للرئيسية",
         designedBy: "فريق التصميم",
+        supervisorLabel: "إشراف",
         referencesHeading: "المراجع العلمية",
         refTopic1: "١. معدل الانتشار",
         refTopic2: "٢. معدل الحدوث",
