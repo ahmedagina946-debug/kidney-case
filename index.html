@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
+  <meta name="color-scheme" content="dark" />
+  <meta name="supported-color-schemes" content="dark" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <meta name="theme-color" content="#5F2A73" />
@@ -1692,6 +1694,35 @@
     /* Supervisor line (homepage) */
     .supervisor-line{margin:0 0 1.1rem;text-align:center;font-size:1rem;font-weight:600;color:rgba(255,255,255,.85);}
     .supervisor-line .supervisor-name{color:var(--g-accent);font-weight:800;font-size:1.2rem;}
+
+    /* 16. DARK PURPLE TEXT ON LIGHT-BLUE BACKGROUNDS (all states) */
+    :root { --on-blue: #2A1240; }
+    .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:focus, .btn-primary:disabled,
+    .btn-video, .btn-video:hover, .btn-video:active, .btn-video:focus,
+    .btn-secondary:hover, .btn-secondary:active,
+    .lang-toggle:hover, .lang-toggle:active,
+    .designer-avatar, .patient-avatar, .brand-icon, .play-circle,
+    .option-btn.selected .option-letter,
+    .btn-primary *, .btn-video *, .btn-secondary:hover *, .lang-toggle:hover *,
+    .designer-avatar *, .patient-avatar *, .brand-icon * { color: var(--on-blue) !important; }
+    .btn-primary svg, .btn-video svg, .btn-secondary:hover svg, .lang-toggle:hover svg, .patient-avatar svg, .brand-icon svg { stroke: var(--on-blue); }
+    .btn-video svg polygon, .btn-primary svg polygon { fill: var(--on-blue); stroke: var(--on-blue); }
+    .btn-secondary:hover, .lang-toggle:hover { background: #AFD0ED !important; border-color: #AFD0ED !important; }
+    .btn-primary:disabled { background: linear-gradient(135deg, #AFD0ED 0%, #7FB1DC 100%) !important; opacity: .5; }
+
+    /* 17. NO FORCED DARK MODE RECOLORING (browser auto-dark) */
+    :root { color-scheme: dark only; }
+    html { color-scheme: dark only; }
+    .btn-primary, .btn-primary *, .btn-video, .btn-video *,
+    .btn-secondary:hover, .btn-secondary:hover *, .lang-toggle:hover, .lang-toggle:hover *,
+    .designer-avatar, .patient-avatar, .patient-avatar *, .brand-icon, .brand-icon *,
+    .play-circle, .play-circle *, .option-btn.selected .option-letter {
+      color: var(--on-blue) !important;
+      -webkit-text-fill-color: var(--on-blue) !important;
+      forced-color-adjust: none;
+    }
+    .btn-primary svg *, .btn-video svg *, .patient-avatar svg *, .brand-icon svg *, .btn-secondary:hover svg *, .lang-toggle:hover svg * { stroke: var(--on-blue) !important; }
+    .btn-primary svg polygon, .btn-video svg polygon, .play-circle svg polygon { fill: var(--on-blue) !important; }
 </style>
 </head>
 <body>
@@ -2263,7 +2294,7 @@
 
   <footer class="app-footer">
     <span data-i18n="footerText">KIDNEY CASE • Interactive Medical Awareness Experience</span>
-    <div id="madeByCredit" style="display:none;margin-top:6px;font-weight:600;" dir="ltr">Made with <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" style="vertical-align:-2px;display:inline-block;" aria-label="love"><path fill="#e0245e" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> by Ahmed Ehab Agina</div>
+    <div id="madeByCredit" style="display:block;margin-top:6px;font-weight:600;" dir="ltr">Made with <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" style="vertical-align:-2px;display:inline-block;" aria-label="love"><path fill="#e0245e" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> by Ahmed Ehab Agina</div>
   </footer>
 
   <!-- ========================================================================
@@ -3265,10 +3296,5 @@
       applyLanguage("en");
     }
   </script>
-<script>
-(function(){var c=document.getElementById("madeByCredit"),p=document.getElementById("stage-6");
-function u(){var on=p.classList.contains("active")?"block":"none";c.style.display=on;}
-new MutationObserver(u).observe(p,{attributes:true,attributeFilter:["class"]});u();})();
-</script>
 </body>
 </html>
