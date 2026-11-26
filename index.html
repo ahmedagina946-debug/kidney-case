@@ -1723,6 +1723,21 @@
     }
     .btn-primary svg *, .btn-video svg *, .patient-avatar svg *, .brand-icon svg *, .btn-secondary:hover svg *, .lang-toggle:hover svg * { stroke: var(--on-blue) !important; }
     .btn-primary svg polygon, .btn-video svg polygon, .play-circle svg polygon { fill: var(--on-blue) !important; }
+
+    /* Highlighted design team */
+    #designersGrid .designer-card{position:relative;background:linear-gradient(135deg,rgba(175,208,237,.22),rgba(95,42,115,.35));border:2px solid #AFD0ED;box-shadow:0 0 14px rgba(175,208,237,.45);padding:.8rem .9rem;}
+    #designersGrid .designer-card::after{content:"\2605";position:absolute;top:.4rem;right:.65rem;color:#AFD0ED;font-size:1.1rem;}
+    #designersGrid .designer-avatar{flex:0 0 46px;height:46px;font-size:1.15rem;box-shadow:0 0 0 3px rgba(175,208,237,.5);}
+    #designersGrid .designer-name{font-size:1.05rem;}
+
+    #group23Panel{gap:.4rem;text-align:left;}
+    .g23-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .7rem;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(175,208,237,.2);color:#fff;font-size:.9rem;}
+    .g23-num{flex:0 0 1.6rem;opacity:.6;font-size:.8rem;}
+    .g23-name{flex:1;}
+    .g23-design{background:linear-gradient(135deg,rgba(175,208,237,.25),rgba(95,42,115,.4));border:2px solid #AFD0ED;box-shadow:0 0 12px rgba(175,208,237,.45);font-weight:800;}
+    .g23-badge{font-size:.7rem;color:#AFD0ED;white-space:nowrap;font-weight:700;}
+
+    #group23Panel[hidden]{display:none !important;}
 </style>
 </head>
 <body>
@@ -1848,6 +1863,10 @@
 
         <button type="button" class="btn btn-secondary" id="openRefsBtn" style="margin-top:12px;">
           <span data-i18n="openRefsBtn">REFERENCES</span>
+        </button>
+
+        <button type="button" class="btn btn-secondary" id="group23Btn" style="margin-top:12px;">
+          <span>GROUP 23</span>
         </button>
 
         <div class="designers-block" dir="ltr">
@@ -2290,6 +2309,19 @@
       </div>
     </section>
 
+    <section class="stage-panel" id="stage-8" aria-labelledby="group23Title">
+      <div class="card">
+        <div class="card-top-accent"></div>
+        <div class="references-section" style="border-top:none;margin-top:0;padding-top:0;">
+          <h3 class="references-title" id="group23Title">GROUP 23</h3>
+          <div id="group23Panel" class="designers-grid" dir="ltr"></div>
+          <button type="button" class="btn btn-primary" id="group23BackBtn" style="margin-top:18px;">
+            <span data-i18n="refsBackBtn">BACK TO HOME</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="app-footer">
@@ -2687,8 +2719,8 @@
     }
 
     function updateStageIndicatorText() {
-      els.stageIndicator.style.display = state.currentStage === 7 ? "none" : "";
-      if (state.currentStage === 7) return;
+      els.stageIndicator.style.display = state.currentStage >= 7 ? "none" : "";
+      if (state.currentStage >= 7) return;
       if (state.lang === "ar") {
         const arNums = ["١", "٢", "٣", "٤", "٥", "٦"];
         els.stageIndicator.textContent = `${arNums[state.currentStage - 1]} / ٦`;
@@ -2926,7 +2958,7 @@
       state.userAnswers = Array.isArray(saved.ans) && saved.ans.length === 3 ? saved.ans : [null, null, null];
 
       applyLanguage(saved.lang === "ar" ? "ar" : "en");
-      goToStage(Math.min(7, Math.max(1, saved.stage)));
+      goToStage(Math.min(8, Math.max(1, saved.stage)));
       return true;
     }
 
@@ -3260,11 +3292,49 @@
     els.openRefsBtn.addEventListener("click", () => goToStage(7));
     els.refsBackBtn.addEventListener("click", () => goToStage(1));
 
+    const GROUP23_MEMBERS = [
+      { name: "Ahmed Ehab Agina", design: true },
+      { name: "Ahmed Shaaban Ahmed", design: false },
+      { name: "Ahmed Abdelaziz Fathy", design: false },
+      { name: "Ahmed Omar Talaat", design: false },
+      { name: "Ahmed Amr Ahmed", design: false },
+      { name: "Ahmed Mohamed Abdullah", design: false },
+      { name: "Ahmed Mohamed Abdullah", design: false },
+      { name: "Ahmed Mostafa Ibrahim", design: false },
+      { name: "Islam Mostafa Mahmoud", design: false },
+      { name: "Amir Mohamed Mohamed", design: false },
+      { name: "Gehad Osama Khalil", design: true },
+      { name: "Hussein El-Shafei Abdelfadil", design: false },
+      { name: "Sama Mohamed Galal", design: false },
+      { name: "Abdelrahman Abdelnasser Abdelsamie", design: true },
+      { name: "Abdullah Abboud Hassan", design: false },
+      { name: "Maria Mohamed Mamdouh", design: false },
+      { name: "Maher Khaled Mohamed", design: false },
+      { name: "Mohamed Abdelrahim Ibrahim", design: false },
+      { name: "Mahmoud Mohamed Abdullah", design: false },
+      { name: "Mariam Ahmed El-Sayed", design: false },
+      { name: "Mariam Yasser Salama", design: false },
+      { name: "Menna Allah Mohamed", design: false },
+      { name: "Menna Mahmoud Mohamed", design: true },
+      { name: "Maha Hossam Ramadan", design: true },
+      { name: "Nada Youssef Sultan", design: false }
+    ];
+    (function () {
+      const gb = document.getElementById("group23Btn");
+      const gp = document.getElementById("group23Panel");
+      gp.innerHTML = GROUP23_MEMBERS.map((m, i) =>
+        '<div class="g23-row' + (m.design ? ' g23-design' : '') + '"><span class="g23-num">' + (i + 1) + '</span><span class="g23-name">' + m.name + '</span>' + (m.design ? '<span class="g23-badge">\u2605 Design team</span>' : '') + '</div>'
+      ).join("");
+      gb.addEventListener("click", () => goToStage(8));
+      document.getElementById("group23BackBtn").addEventListener("click", () => goToStage(1));
+    })();
+
 
     const SHOW_DETAILS = true; // set to false to show names only
     const DESIGNERS = [
       { name: "Abdelrahman Abdelnasser Abdelsamie", id: "25010519", email: "abdelrhman1as@gmail.com" },
       { name: "Ahmed Ehab Agina", id: "25010121", email: "ahmedagina@std.mansnu.edu.eg" },
+      { name: "Gehad Osama Khalil", id: "25010149", email: "gehadosama@std.mansnu.edu.eg" },
       { name: "Maha Hossam Ramadan", id: "25010402", email: "mahahossam@std.mansnu.edu.eg" },
       { name: "Menna Mahmoud Mohamed", id: "25010157", email: "mennaelshiref@std.mansnu.edu.eg" }
     ];
